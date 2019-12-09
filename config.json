@@ -16,6 +16,6 @@
         "103cd8d7b88204653f0a92cdd54ddb75.png?size=2048"
     ],
     "whitelistedids":[294882584201003009,653578214685409301],
-    "blacklistedidsextra" : "653514334198300672",
+    "blacklistedidsextra" : [65351433419830067,653371641090408449],
     "defaultguildid":"445439920161423370"
 }

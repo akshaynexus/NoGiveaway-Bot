@@ -85,47 +85,8 @@ async function banBlacklisted(msg, fBanExtra) {
         client.channels.get(msg.channel.id).send({
             embed: banConfirmationEmbedModlog
         }); // Sends the RichEmbed in the modlogchannel
-    } else if (fBanExtra) {
-        const member = msg.guild.member(extrablacklist);
-        if (member) {
-            /**
-             * Ban the member
-             * Make sure you run this on a member, not a user!
-             * There are big differences between a user and a member
-             * Read more about what ban options there are over at
-             * https://discord.js.org/#/docs/main/master/class/GuildMember?scrollTo=ban
-             */
-            member.ban({
-                reason: 'SpamBot',
-            }).then(() => {
-                // We let the message author know we were able to ban the person
-                ++bancount;
-                console.log("Banned sucessfully :" + bancount)
-                if (bancount == blacklistedmatches) {
-                    const banConfirmationEmbedModlog = new Discord.RichEmbed()
-                        .setAuthor(`Banned Spammers by **${msg.author.username}#${msg.author.discriminator}**`, msg.author.displayAvatarURL)
-                        .setColor('RED')
-                        .setTimestamp()
-                        .setDescription(`**Action**: Ban
-                    **Bancount**: ${bancount}
-                    **Reason**: SpamBot`);
-                    client.channels.get(msg.channel.id).send({
-                        embed: banConfirmationEmbedModlog
-                    }); // Sends the RichEmbed in the modlogchannel
-                }
-            }).catch(err => {
-                // An error happened
-                // This is generally due to the bot not being able to ban the member,
-                // either due to missing permissions or role hierarchy
-                msg.reply('I was unable to ban the member');
-                // Log the error
-                console.error(err);
-            });
-        } else {
-            // The mentioned user isn't in this guild
-            msg.reply('That user isn\'t in this guild!');
-        }
     } else {
+        if (fBanExtra) {blacklistedids.concat(extrablacklist)}
         blacklistedids.forEach(function(item) {
             const member = msg.guild.member(item);
             if (member) {
