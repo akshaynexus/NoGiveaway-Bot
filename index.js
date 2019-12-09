@@ -1,31 +1,20 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
+const config = require('./config.json')
+
 var list;
 var blacklistedmatches = 0;
 var bancount = 0;
 //Blacklisted avatars
-var blacklistedavatars = [
-"253c85fb6f0dd090a13283f0931cbc21.png?size=2048",
-"58766651d855568a66cad92d84fb2380.png?size=2048",
-"9b38a80facc875833c57dd7e80e692e1.png?size=2048",
-"3d2e94f55e20531f755de03d30c860b1.png?size=2048",
-"32202584a0cb2d2923fa3e4cfecd050e.png?size=2048",
-"e5f0ed70aa01a89c3a674bac548cb69e.png?size=2048",
-"8413b534ba025e053590f81b8113e15c.png?size=2048",
-"a24223c62e6238f8f240533c7588cc52.png?size=2048",
-"dfcc4e4f9ccdd290d645586bb49509da.png?size=2048",
-"99dfc51eea4606776e369594a45804b3.png?size=2048",
-"383a68d62656ac869c8efcc8566db98c.png?size=2048",
-"103cd8d7b88204653f0a92cdd54ddb75.png?size=2048"
-];
+const blacklistedavatars = config.blacklistedavatars;
+const modlogChannelID = config.modchanelid;
 //whitelist the real giveaway bot and nogiveaway bot
-var whitelistedids = [294882584201003009,653578214685409301];
-const modlogChannelID = '495726949818433556';
+var whitelistedids = config.whitelistedids;
+
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
     client.user.setActivity(`Protecting ${client.guilds.size} servers from giveaway spam`);
-    //TODO get guild from msg instead
-    list = client.guilds.get("setidhere");
+    list = client.guilds.get(config.defaultguildid);
 });
 client.on("guildCreate", guild => {
     // This event triggers when the bot joins a guild.
@@ -34,23 +23,28 @@ client.on("guildCreate", guild => {
 });
 var blacklistedids = [];
 client.on('message', msg => {
+    //Check if there is a guild in message,dont go further if its a dm.
     if (!msg.guild) return;
 
     if (msg.content === 'ping') {
         msg.reply('pong');
     }
-    if(msg.content === 'buildblacklist'){
+
+    else if(msg.content === 'buildblacklist'){
         getGiveawayUsers();
         msg.reply("Built Blacklist");
     }
-    if(msg.content === 'getblacklistcount'){
+
+    else if(msg.content === 'getblacklistcount'){
         msg.reply( blacklistedmatches);
     }
-    if(msg.content === 'banBlacklisted'){
+
+    else if(msg.content === 'banBlacklisted'){
         banBlacklisted(msg);
     }
+
 });
-client.login('yourtokenhere');
+client.login(config.token);
 async function getGiveawayUsers() {
     if (list != undefined)
         list.members.forEach(member => {
