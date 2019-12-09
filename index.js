@@ -10,7 +10,7 @@ const blacklistedavatars = config.blacklistedavatars;
 const modlogChannelID = config.modchanelid;
 //whitelist the real giveaway bot and nogiveaway bot
 const whitelistedids = config.whitelistedids;
-
+var extrablacklist = config.blacklistedidsextra;
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
     client.user.setActivity(`Protecting ${client.guilds.size} servers from giveaway spam`);
@@ -31,7 +31,7 @@ client.on('message', msg => {
     }
 
     else if(msg.content === 'buildblacklist'){
-        getGiveawayUsers();
+        buildBlacklist();
         msg.reply("Built Blacklist");
     }
 
@@ -42,10 +42,12 @@ client.on('message', msg => {
     else if(msg.content === 'banBlacklisted'){
         banBlacklisted(msg);
     }
-
+    else if(msg.content === 'banextra'){
+        banBlacklisted(msg,true);
+    }
 });
 client.login(config.token);
-async function getGiveawayUsers() {
+async function buildBlacklist() {
     if (list != undefined)
         list.members.forEach(member => {
             //Check if user has giveaway,ownerbit or magic in username and isnt in whitelist
@@ -55,23 +57,22 @@ async function getGiveawayUsers() {
             }
             else{
             //Some may use a different name,then fall back to profile picture checker
-            checkForBlacklistAvatar(member.user.id)
+            checkForBlacklistedAvatar(member.user.id)
             }
         });
 }
-function checkForBlacklistAvatar(userid) {
+function checkForBlacklistedAvatar(userid) {
     client.fetchUser(userid).then(myUser => {
         blacklistedavatars.forEach(function (item) {
             if( myUser.avatarURL != null && myUser.avatarURL.includes(item.toString())){
                 console.log("Adding blacklisted userid :" + userid);
                 blacklistedmatches = blacklistedids.push(userid);
             }
-          });
+        });
 });
 }
-async function banBlacklisted(msg){
+async function banBlacklisted(msg,fBanExtra){
     if(bancount == blacklistedmatches) {
-        msg.reply('Banned ' + bancount + ' Spammers');
         const banConfirmationEmbedModlog = new Discord.RichEmbed()
         .setAuthor(`Banned Spammers by **${msg.author.username}#${msg.author.discriminator}**`, msg.author.displayAvatarURL)
         .setColor('RED')
@@ -82,6 +83,47 @@ async function banBlacklisted(msg){
         client.channels.get(modlogChannelID).send({
         embed: banConfirmationEmbedModlog
         }); // Sends the RichEmbed in the modlogchannel
+    }
+    else if (fBanExtra){
+        const member = msg.guild.member(extrablacklist);
+        if (member) {
+            /**
+             * Ban the member
+             * Make sure you run this on a member, not a user!
+             * There are big differences between a user and a member
+             * Read more about what ban options there are over at
+             * https://discord.js.org/#/docs/main/master/class/GuildMember?scrollTo=ban
+             */
+            member.ban({
+              reason: 'SpamBot',
+            }).then(() => {
+              // We let the message author know we were able to ban the person
+              ++bancount;
+              console.log("Banned sucessfully :" + bancount)
+                if(bancount == blacklistedmatches) {
+                    const banConfirmationEmbedModlog = new Discord.RichEmbed()
+                    .setAuthor(`Banned Spammers by **${msg.author.username}#${msg.author.discriminator}**`, msg.author.displayAvatarURL)
+                    .setColor('RED')
+                    .setTimestamp()
+                    .setDescription(`**Action**: Ban
+                    **Bancount**: ${bancount}
+                    **Reason**: SpamBot`);
+                    client.channels.get(modlogChannelID).send({
+                    embed: banConfirmationEmbedModlog
+                    }); // Sends the RichEmbed in the modlogchannel
+                }
+            }).catch(err => {
+              // An error happened
+              // This is generally due to the bot not being able to ban the member,
+              // either due to missing permissions or role hierarchy
+              msg.reply('I was unable to ban the member');
+              // Log the error
+              console.error(err);
+            });
+          } else {
+            // The mentioned user isn't in this guild
+            msg.reply('That user isn\'t in this guild!');
+          }
     }
     else{
         blacklistedids.forEach(function (item) {
@@ -98,8 +140,20 @@ async function banBlacklisted(msg){
                   reason: 'SpamBot',
                 }).then(() => {
                   // We let the message author know we were able to ban the person
-                  bancount++;
+                  ++bancount;
                   console.log("Banned sucessfully :" + bancount)
+                    if(bancount == blacklistedmatches) {
+                        const banConfirmationEmbedModlog = new Discord.RichEmbed()
+                        .setAuthor(`Banned Spammers by **${msg.author.username}#${msg.author.discriminator}**`, msg.author.displayAvatarURL)
+                        .setColor('RED')
+                        .setTimestamp()
+                        .setDescription(`**Action**: Ban
+                        **Bancount**: ${bancount}
+                        **Reason**: SpamBot`);
+                        client.channels.get(modlogChannelID).send({
+                        embed: banConfirmationEmbedModlog
+                        }); // Sends the RichEmbed in the modlogchannel
+                    }
                 }).catch(err => {
                   // An error happened
                   // This is generally due to the bot not being able to ban the member,
