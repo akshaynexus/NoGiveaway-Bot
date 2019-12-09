@@ -69,7 +69,8 @@ async function buildBlacklist(msg) {
                 member.user.id != whitelistedids[0] &&
                 member.user.id != whitelistedids[1] ||
                 member.user.username.toLowerCase().includes("ownerbit") &&
-                (member.user.username != "NoGiveaway" || member.user.username != "GiveawayBot" || member.user.username == "MAGIC")) {
+                (member.user.username != "NoGiveaway" || member.user.username != "GiveawayBot"
+                || member.user.username == "MAGIC" || member.user.username.toLowerCase().includes("aerobit"))) {
                 console.log("Adding blacklisted userid :" + member.user.id);
                 blacklistedmatches = blacklistedids.push(member.user.id);
             } else {
