@@ -1,0 +1,24 @@
+{
+  "name": "nogiveaway-bot",
+  "version": "1.0.0",
+  "description": "NoGiveaway-Bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akshaynexus/NoGiveaway-Bot.git"
+  },
+  "author": "akshaynexus",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/akshaynexus/NoGiveaway-Bot/issues"
+  },
+  "homepage": "https://github.com/akshaynexus/NoGiveaway-Bot#readme",
+  "dependencies": {
+    "discord.js": "^11.5.1",
+    "looks-same": "^7.2.2"
+  }
+}
