@@ -13,7 +13,6 @@ var extrablacklist = config.blacklistedidsextra;
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
     client.user.setActivity(`Protecting ${client.guilds.size} servers from giveaway spam`);
-    list = client.guilds.get(config.defaultguildid);
 });
 client.on("guildCreate", guild => {
     // This event triggers when the bot joins a guild.
@@ -47,7 +46,9 @@ async function buildBlacklist(msg) {
     }
     list = msg.guild;
     if (list != undefined)
-        list.members.forEach(member => {
+    //Fetch members,using fetchmemebers are users are normally greater than 250 on crypto servers
+    list.fetchMembers().then(code => {
+         code.members.forEach(member=>{
             //Check if user has giveaway,ownerbit or magic in username and isnt in whitelist
             if (member.user.username.toLowerCase().includes("giveaway") &&
                 member.user.id != whitelistedids[0] &&
@@ -61,6 +62,7 @@ async function buildBlacklist(msg) {
                 checkForBlacklistedAvatar(member.user)
             }
         });
+    });
 }
 
 function checkForBlacklistedAvatar(user) {
