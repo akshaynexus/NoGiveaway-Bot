@@ -29,7 +29,6 @@ client.on('guildMemberAdd', member => {
     const channel = member.guild.channels.find(ch => ch.name === 'member-log');
     // Do nothing if the channel wasn't found on this server
     if (!channel) return;
-    console.log(member)
     checkForBlacklistedAvatarandBan(member)
     // Send the message, mentioning the member
     channel.send(`Welcome to the server, ${member}`);
@@ -99,7 +98,7 @@ function checkForBlacklistedAvatarandBan(user) {
     banBlacklisted(null,false,user)
 }
 async function banBlacklisted(msg, fBanExtra,memberx) {
-    if (bancount == blacklistedmatches) {
+    if (bancount == blacklistedmatches && memberx == null && bancount > 0 && blacklistedmatches > 0) {
         const banConfirmationEmbedModlog = new Discord.RichEmbed()
             .setAuthor(`Banned Spammers by **${msg.author.username}#${msg.author.discriminator}**`, msg.author.displayAvatarURL)
             .setColor('RED')
@@ -115,7 +114,8 @@ async function banBlacklisted(msg, fBanExtra,memberx) {
                 blacklistedids = [];
                 bancount = 0;
                 blacklistedmatches = 0;
-    } else {
+    }
+     else {
         if (fBanExtra) {blacklistedids.concat(extrablacklist)}
         blacklistedids.forEach(function(item) {
 
