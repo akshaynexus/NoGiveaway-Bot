@@ -9,7 +9,7 @@ var bancount = 0;
 const blacklistedavatars = config.blacklistedavatars;
 const modlogChannelID = config.modchanelid;
 //whitelist the real giveaway bot and nogiveaway bot
-var whitelistedids = config.whitelistedids;
+const whitelistedids = config.whitelistedids;
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
@@ -54,7 +54,7 @@ async function getGiveawayUsers() {
                 blacklistedmatches = blacklistedids.push(member.user.id);
             }
             else{
-                //Some may use a different name,then fall back to profile picture checker
+            //Some may use a different name,then fall back to profile picture checker
             checkForBlacklistAvatar(member.user.id)
             }
         });
@@ -63,16 +63,14 @@ function checkForBlacklistAvatar(userid) {
     client.fetchUser(userid).then(myUser => {
         blacklistedavatars.forEach(function (item) {
             if( myUser.avatarURL != null && myUser.avatarURL.includes(item.toString())){
-                // console.log("Detected blacklisted avatar: " + userid);
                 console.log("Adding blacklisted userid :" + userid);
                 blacklistedmatches = blacklistedids.push(userid);
-                console.log("Final count :" + blacklistedmatches)
             }
           });
 });
 }
 async function banBlacklisted(msg){
-    if(bancount == blacklistedmatches.length) {
+    if(bancount == blacklistedmatches) {
         msg.reply('Banned ' + bancount + ' Spammers');
         const banConfirmationEmbedModlog = new Discord.RichEmbed()
         .setAuthor(`Banned Spammers by **${msg.author.username}#${msg.author.discriminator}**`, msg.author.displayAvatarURL)
