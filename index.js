@@ -68,8 +68,8 @@ async function buildBlacklist(msg) {
 function checkForBlacklistedAvatar(user) {
     blacklistedavatars.forEach(function(item) {
         if (user.avatar != null && user.avatar.includes(item.toString())) {
-            console.log("Adding blacklisted userid :" + userid);
-            blacklistedmatches = blacklistedids.push(userid);
+            console.log("Adding blacklisted userid :" + user.id);
+            blacklistedmatches = blacklistedids.push(user.id);
         }
     });
 }

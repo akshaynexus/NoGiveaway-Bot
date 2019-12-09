@@ -1,22 +1,21 @@
 {
-    "token":"yourtokenhere",
-    "modchanelid": "495726949818433556",
+    "token":"TOKENHERE",
+    "modchanelid": "modChannelhere",
     "blacklistedavatars":[
-        "253c85fb6f0dd090a13283f0931cbc21.png?size=2048",
-        "58766651d855568a66cad92d84fb2380.png?size=2048",
-        "9b38a80facc875833c57dd7e80e692e1.png?size=2048",
-        "3d2e94f55e20531f755de03d30c860b1.png?size=2048",
-        "32202584a0cb2d2923fa3e4cfecd050e.png?size=2048",
-        "e5f0ed70aa01a89c3a674bac548cb69e.png?size=2048",
-        "8413b534ba025e053590f81b8113e15c.png?size=2048",
-        "a24223c62e6238f8f240533c7588cc52.png?size=2048",
-        "dfcc4e4f9ccdd290d645586bb49509da.png?size=2048",
-        "99dfc51eea4606776e369594a45804b3.png?size=2048",
-        "383a68d62656ac869c8efcc8566db98c.png?size=2048",
-        "103cd8d7b88204653f0a92cdd54ddb75.png?size=2048",
-        "acda93975238eff4d4dbc18756887c63.png?size=2048"
+        "253c85fb6f0dd090a13283f0931cbc21",
+        "58766651d855568a66cad92d84fb2380",
+        "9b38a80facc875833c57dd7e80e692e1",
+        "3d2e94f55e20531f755de03d30c860b1",
+        "32202584a0cb2d2923fa3e4cfecd050e",
+        "e5f0ed70aa01a89c3a674bac548cb69e",
+        "8413b534ba025e053590f81b8113e15c",
+        "a24223c62e6238f8f240533c7588cc52",
+        "dfcc4e4f9ccdd290d645586bb49509da",
+        "99dfc51eea4606776e369594a45804b3",
+        "383a68d62656ac869c8efcc8566db98c",
+        "103cd8d7b88204653f0a92cdd54ddb75",
+        "acda93975238eff4d4dbc18756887c63"
     ],
     "whitelistedids":[294882584201003009,653578214685409301],
-    "blacklistedidsextra" : [65351433419830067,653371641090408449],
-    "defaultguildid":"445439920161423370"
+    "blacklistedidsextra" : [65351433419830067,653371641090408449]
 }
