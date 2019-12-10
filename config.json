@@ -1,6 +1,6 @@
 {
-    "token":"TOKENHERE",
-    "modchanelid": "modChannelhere",
+    "token":"NjUzNTc4MjE0Njg1NDA5MzAx.Xe5CLA.CRFxrGFRxOgUOrMEh-o2fJuRnMI",
+    "modchanelid": "653649119579209738",
     "blacklistedavatars":[
         "253c85fb6f0dd090a13283f0931cbc21",
         "58766651d855568a66cad92d84fb2380",
@@ -16,7 +16,10 @@
         "103cd8d7b88204653f0a92cdd54ddb75",
         "acda93975238eff4d4dbc18756887c63",
         "cea482cf28b15c2b33123a91aa577a52",
-        "f3d851f59a83bd694b94d205d54ca680"
+        "f3d851f59a83bd694b94d205d54ca680",
+        "36de89667e28ce1a67c3d97e1d3564c2",
+        "a574e2b05193aba813ab018b5037df18",
+        "abba8ab2adb89992118a1016ef202d16"
     ],
     "whitelistedids":[294882584201003009,653578214685409301],
     "blacklistedidsextra" : [65351433419830067,653371641090408449]
