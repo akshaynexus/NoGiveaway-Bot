@@ -13,6 +13,7 @@ const blacklistedavatars = config.blacklistedavatars;
 //whitelist the real giveaway bot and nogiveaway bot
 const whitelistedids = config.whitelistedids;
 var blacklistedidsconf = config.blacklisedids;
+
 //Executes when connected successfully after login with token
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
@@ -162,9 +163,10 @@ function sendBanReport(msg){
     .setAuthor(`Banned Spammers by **${msg.author.username}#${msg.author.discriminator}**`, msg.author.displayAvatarURL)
     .setColor('RED')
     .setTimestamp()
-    .setDescription(`**Action**: Ban
-**Bancount**: ${bancount}
-**Reason**: SpamBot`);
+    .setDescription(`
+    **Action**: Ban
+    **Bancount**: ${bancount}
+    **Reason**: SpamBot`);
 client.channels.get(msg.channel.id).send({
     embed: banConfirmationEmbedModlog
 });
