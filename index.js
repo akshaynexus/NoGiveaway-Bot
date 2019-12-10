@@ -1,7 +1,8 @@
+//Import needed libraries and files
 const Discord = require('discord.js');
 const client = new Discord.Client();
 const config = require('./config.json')
-
+//Global vars,will be removed once db integration is complete
 var list;
 var blacklistedmatches = 0;
 var bancount = 0;
@@ -12,14 +13,18 @@ const whitelistedids = config.whitelistedids;
 var extrablacklist = config.blacklistedidsextra;
 var blacklistedids = [];
 
+//Executes when connected successfully after login with token
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
     client.user.setActivity(`Protecting ${client.guilds.size} servers from giveaway spam`);
 });
 
+// This event triggers when the bot joins a guild.
 client.on("guildCreate", guild => {
     // This event triggers when the bot joins a guild.
     console.log(`New guild joined: ${guild.name} (id: ${guild.id}). This guild has ${guild.memberCount} members!`);
+    //Add guild to db,needs changes
+    addGuildtoDB(guild.id);
     client.user.setActivity(`Protecting ${client.guilds.size} servers from giveaway spam`);
 });
 
@@ -29,12 +34,14 @@ client.on('guildMemberAdd', member => {
     const channel = member.guild.channels.find(ch => ch.name === 'member-log');
     // Do nothing if the channel wasn't found on this server
     if (!channel) return;
+    //check if user joined has a blacklisted avatar hash
     checkForBlacklistedAvatarandBan(member)
     // Send the message, mentioning the member
     channel.send(`Welcome to the server, ${member}`);
   });
 
 client.on('message', msg => {
+
     //Check if there is a guild in message,dont go further if its a dm.
     if (!msg.guild) return;
 
@@ -50,8 +57,12 @@ client.on('message', msg => {
     } else if (msg.content === 'banextra') {
         banBlacklisted(msg, true,null);
     }
+
 });
+//Login to discord with token
 client.login(config.token);
+
+//Builds blacklist array
 async function buildBlacklist(msg) {
     if (blacklistedids.length > 0 || bancount > 0 || blacklistedmatches > 0) {
         //reset fields,just incase as we only support one server for now per instance
@@ -59,6 +70,7 @@ async function buildBlacklist(msg) {
         bancount = 0
         blacklistedmatches = 0
     }
+    //Get guild from msg invoking this command
     list = msg.guild;
     if (list != undefined)
     //Fetch members,using fetchmemebers are users are normally greater than 250 on crypto servers
@@ -80,6 +92,10 @@ async function buildBlacklist(msg) {
         });
     });
 }
+function addGuildtoDB(guildid){
+    //Write db code here
+
+}
 
 function checkForBlacklistedAvatar(user) {
     blacklistedavatars.forEach(function(item) {
@@ -89,37 +105,20 @@ function checkForBlacklistedAvatar(user) {
         }
     });
 }
+
 function checkForBlacklistedAvatarandBan(user) {
     blacklistedavatars.forEach(function(item) {
         if (user.user.avatar != null && user.user.avatar.includes(item.toString())) {
             console.log("Adding blacklisted userid :" + user.id);
             blacklistedmatches = blacklistedids.push(user.user.id);
+            banBlacklisted(null,false,user)
         }
     });
-    banBlacklisted(null,false,user)
 }
+
 async function banBlacklisted(msg, fBanExtra,memberx) {
-    if (bancount == blacklistedmatches && memberx == null && bancount > 0 && blacklistedmatches > 0) {
-        const banConfirmationEmbedModlog = new Discord.RichEmbed()
-            .setAuthor(`Banned Spammers by **${msg.author.username}#${msg.author.discriminator}**`, msg.author.displayAvatarURL)
-            .setColor('RED')
-            .setTimestamp()
-            .setDescription(`**Action**: Ban
-        **Bancount**: ${bancount}
-        **Reason**: SpamBot`);
-        client.channels.get(msg.channel.id).send({
-            embed: banConfirmationEmbedModlog
-        }); // Sends the RichEmbed in the modlogchannel
-        //Clear bancount and blacklist after clearing
-                //reset fields,just incase as we only support one server for now per instance
-                blacklistedids = [];
-                bancount = 0;
-                blacklistedmatches = 0;
-    }
-     else {
         if (fBanExtra) {blacklistedids.concat(extrablacklist)}
         blacklistedids.forEach(function(item) {
-
             var member;
             if(msg != null)
                member = msg.guild.member(item);
@@ -127,13 +126,6 @@ async function banBlacklisted(msg, fBanExtra,memberx) {
                 member = memberx
 
             if (member) {
-                /**
-                 * Ban the member
-                 * Make sure you run this on a member, not a user!
-                 * There are big differences between a user and a member
-                 * Read more about what ban options there are over at
-                 * https://discord.js.org/#/docs/main/master/class/GuildMember?scrollTo=ban
-                 */
                 member.ban({
                     reason: 'SpamBot',
                 }).then(() => {
@@ -141,16 +133,12 @@ async function banBlacklisted(msg, fBanExtra,memberx) {
                     ++bancount;
                     console.log("Banned sucessfully :" + bancount)
                     if (bancount == blacklistedmatches) {
-                        const banConfirmationEmbedModlog = new Discord.RichEmbed()
-                            .setAuthor(`Banned Spammers by **${msg.author.username}#${msg.author.discriminator}**`, msg.author.displayAvatarURL)
-                            .setColor('RED')
-                            .setTimestamp()
-                            .setDescription(`**Action**: Ban
-                        **Bancount**: ${bancount}
-                        **Reason**: SpamBot`);
-                        client.channels.get(msg.channel.id).send({
-                            embed: banConfirmationEmbedModlog
-                        }); // Sends the RichEmbed in the modlogchannel
+                       // Sends the RichEmbed in the modlogchannel
+                        sendBanReport(msg)
+                        //Clear all count after banning list,TODO Add db based counts for each guild isntead
+                        blacklistedids = [];
+                        bancount = 0;
+                        blacklistedmatches = 0;
                     }
                 }).catch(err => {
                     // An error happened
@@ -165,5 +153,17 @@ async function banBlacklisted(msg, fBanExtra,memberx) {
                 msg.reply('That user isn\'t in this guild!');
             }
         });
-    }
+}
+
+function sendBanReport(msg){
+    const banConfirmationEmbedModlog = new Discord.RichEmbed()
+    .setAuthor(`Banned Spammers by **${msg.author.username}#${msg.author.discriminator}**`, msg.author.displayAvatarURL)
+    .setColor('RED')
+    .setTimestamp()
+    .setDescription(`**Action**: Ban
+**Bancount**: ${bancount}
+**Reason**: SpamBot`);
+client.channels.get(msg.channel.id).send({
+    embed: banConfirmationEmbedModlog
+});
 }
