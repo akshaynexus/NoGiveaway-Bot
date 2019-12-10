@@ -6,13 +6,13 @@ const config = require('./config.json')
 var list;
 var blacklistedmatches = 0;
 var bancount = 0;
+var blacklistedids = [];
+
 //Blacklisted avatars
 const blacklistedavatars = config.blacklistedavatars;
 //whitelist the real giveaway bot and nogiveaway bot
 const whitelistedids = config.whitelistedids;
-var extrablacklist = config.blacklistedidsextra;
-var blacklistedids = [];
-
+var blacklistedidsconf = config.blacklisedids;
 //Executes when connected successfully after login with token
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
@@ -53,9 +53,7 @@ client.on('message', msg => {
     } else if (msg.content === 'getblacklistcount') {
         msg.reply(blacklistedmatches);
     } else if (msg.content === 'banBlacklisted') {
-        banBlacklisted(msg,false,null);
-    } else if (msg.content === 'banextra') {
-        banBlacklisted(msg, true,null);
+        banBlacklisted(msg,null);
     }
 
 });
@@ -66,9 +64,7 @@ client.login(config.token);
 async function buildBlacklist(msg) {
     if (blacklistedids.length > 0 || bancount > 0 || blacklistedmatches > 0) {
         //reset fields,just incase as we only support one server for now per instance
-        blacklistedids = [];
-        bancount = 0
-        blacklistedmatches = 0
+        clearVars();
     }
     //Get guild from msg invoking this command
     list = msg.guild;
@@ -79,7 +75,7 @@ async function buildBlacklist(msg) {
             //Check if user has giveaway,ownerbit or magic in username and isnt in whitelist
             if (member.user.username.toLowerCase().includes("giveaway") &&
                 member.user.id != whitelistedids[0] &&
-                member.user.id != whitelistedids[1] ||
+                member.user.id != whitelistedids[1] ||checkIfIDIsBlacklised(member.user) ||
                 member.user.username.toLowerCase().includes("ownerbit") &&
                 (member.user.username != "NoGiveaway" || member.user.username != "GiveawayBot"
                 || member.user.username == "MAGIC" || member.user.username.toLowerCase().includes("aerobit"))) {
@@ -97,6 +93,12 @@ function addGuildtoDB(guildid){
 
 }
 
+function checkIfIDIsBlacklised(user){
+    blacklistedidsconf.forEach(function(item){
+        if(user.id == item)
+           return true;
+    });
+}
 function checkForBlacklistedAvatar(user) {
     blacklistedavatars.forEach(function(item) {
         if (user.avatar != null && user.avatar.includes(item.toString())) {
@@ -111,48 +113,48 @@ function checkForBlacklistedAvatarandBan(user) {
         if (user.user.avatar != null && user.user.avatar.includes(item.toString())) {
             console.log("Adding blacklisted userid :" + user.id);
             blacklistedmatches = blacklistedids.push(user.user.id);
-            banBlacklisted(null,false,user)
+            banBlacklisted(null,user)
         }
     });
 }
 
-async function banBlacklisted(msg, fBanExtra,memberx) {
-        if (fBanExtra) {blacklistedids.concat(extrablacklist)}
+async function banBlacklisted(msg,memberx) {
+    if(msg != null){
         blacklistedids.forEach(function(item) {
-            var member;
-            if(msg != null)
-               member = msg.guild.member(item);
-            else
-                member = memberx
-
-            if (member) {
-                member.ban({
-                    reason: 'SpamBot',
-                }).then(() => {
-                    // We let the message author know we were able to ban the person
-                    ++bancount;
-                    console.log("Banned sucessfully :" + bancount)
-                    if (bancount == blacklistedmatches) {
-                       // Sends the RichEmbed in the modlogchannel
-                        sendBanReport(msg)
-                        //Clear all count after banning list,TODO Add db based counts for each guild isntead
-                        blacklistedids = [];
-                        bancount = 0;
-                        blacklistedmatches = 0;
-                    }
-                }).catch(err => {
-                    // An error happened
-                    // This is generally due to the bot not being able to ban the member,
-                    // either due to missing permissions or role hierarchy
-                    msg.reply('I was unable to ban the member');
-                    // Log the error
-                    console.error(err);
-                });
-            } else {
-                // The mentioned user isn't in this guild
-                msg.reply('That user isn\'t in this guild!');
-            }
+            banUser(msg,msg.guild.member(item))
         });
+    }
+    else{
+        banUser(msg,memberx)
+    }
+}
+
+function banUser(msg,member){
+    if (member) {
+        member.ban({
+            reason: 'SpamBot',
+        }).then(() => {
+            // We let the message author know we were able to ban the person
+            ++bancount;
+            console.log("Banned sucessfully :" + bancount)
+            if (bancount == blacklistedmatches) {
+               // Sends the RichEmbed in the modlogchannel
+                sendBanReport(msg)
+                //Clear all count after banning list,TODO Add db based counts for each guild isntead
+                clearVars();
+            }
+        }).catch(err => {
+            // An error happened
+            // This is generally due to the bot not being able to ban the member,
+            // either due to missing permissions or role hierarchy
+            msg.reply('I was unable to ban the member');
+            // Log the error
+            console.error(err);
+        });
+    } else {
+        // The mentioned user isn't in this guild
+        msg.reply('That user isn\'t in this guild!');
+    }
 }
 
 function sendBanReport(msg){
@@ -166,4 +168,11 @@ function sendBanReport(msg){
 client.channels.get(msg.channel.id).send({
     embed: banConfirmationEmbedModlog
 });
+}
+
+//Reset global vars
+function clearVars(){
+    blacklistedids = [];
+    bancount = 0;
+    blacklistedmatches = 0;
 }
