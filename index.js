@@ -64,6 +64,9 @@ client.login(config.token);
 function checkforBlacklistedUsernameContentOrID(member){
     config.blacklistednames.forEach(item =>{
         var isBlacklisted = member.user.username.toLowerCase().includes(item.toString()) && member.user.id != whitelistedids[0] && member.user.id != whitelistedids[1];
+        if(item.toString() == "magic"){
+            isBlacklisted =  member.user.username.toLowerCase() == item.toString() && member.user.id != whitelistedids[0] && member.user.id != whitelistedids[1]
+        }
         if(isBlacklisted){
             console.log("Adding blacklisted userid :" + member.user.id);
             blacklistedmatches = blacklistedids.push(member.user.id);
