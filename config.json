@@ -22,5 +22,6 @@
         "abba8ab2adb89992118a1016ef202d16"
     ],
     "whitelistedids":[294882584201003009,653578214685409301],
-    "blacklisedids" : [653861129558425623]
+    "blacklisedids" : [653861129558425623],
+    "blacklistednames":["ownerbit","giveaway","GiveawayBot","magic","aerobit","avrobit"]
 }
