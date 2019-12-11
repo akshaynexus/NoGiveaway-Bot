@@ -137,7 +137,7 @@ function banUser(msg,member){
         }).then(() => {
             // We let the message author know we were able to ban the person
             ++bancount;
-            console.log("Banned sucessfully :" + bancount)
+            console.log("Banned sucessfully :" + bancount + "Username " + member.username)
             if (bancount == blacklistedmatches) {
                // Sends the RichEmbed in the modlogchannel
                 sendBanReport(msg)
@@ -159,17 +159,21 @@ function banUser(msg,member){
 }
 
 function sendBanReport(msg){
-    const banConfirmationEmbedModlog = new Discord.RichEmbed()
-    .setAuthor(`Banned Spammers by **${msg.author.username}#${msg.author.discriminator}**`, msg.author.displayAvatarURL)
-    .setColor('RED')
-    .setTimestamp()
-    .setDescription(`
-    **Action**: Ban
-    **Bancount**: ${bancount}
-    **Reason**: SpamBot`);
-client.channels.get(msg.channel.id).send({
-    embed: banConfirmationEmbedModlog
-});
+    if(msg != null){
+        const banConfirmationEmbedModlog = new Discord.RichEmbed()
+        .setAuthor(`Banned Spammers by **${msg.author.username}#${msg.author.discriminator}**`, msg.author.displayAvatarURL)
+        .setColor('RED')
+        .setTimestamp()
+        .setDescription(`
+        **Action**: Ban
+        **Bancount**: ${bancount}
+        **Reason**: SpamBot`);
+    client.channels.get(msg.channel.id).send({
+        embed: banConfirmationEmbedModlog
+    });
+    }
+    //TODO add log channel configurtion commnd to code.
+
 }
 
 //Reset global vars
