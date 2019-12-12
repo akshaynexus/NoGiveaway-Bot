@@ -33,12 +33,16 @@ client.on("guildCreate", guild => {
 client.on('guildMemberAdd', member => {
     // Send the message to a designated channel on a server:
     const channel = member.guild.channels.find(ch => ch.name === 'member-log');
-    // Do nothing if the channel wasn't found on this server
-    if (!channel) return;
-    //check if user joined has a blacklisted avatar hash
     checkForBlacklistedAvatarandBan(member)
+
+    // Do nothing if the channel wasn't found on this server
+    if (!channel){
+    }
+    else{
+        channel.send(`Welcome to the server, ${member}`);
+    }
+    //check if user joined has a blacklisted avatar hash
     // Send the message, mentioning the member
-    channel.send(`Welcome to the server, ${member}`);
   });
 
 client.on('message', msg => {
