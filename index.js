@@ -168,7 +168,7 @@ async function checkForBlacklistedAvatarandBan(user) {
 async function banBlacklisted(msg,memberx) {
     await new Promise(res => setTimeout(res, 500));
     if(msg != null){
-        blacklistedids.forEach(function(item) {
+        blacklistedids.forEach(async function(item) {
             await banUser(msg,msg.guild.member(item))
         });
     }
