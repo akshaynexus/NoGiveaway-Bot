@@ -8,37 +8,6 @@ var blacklistedmatches = 0;
 var bancount = 0;
 var blacklistedids = [];
 
-class Queue {
-    constructor(maxSimultaneously = 1) {
-        this.maxSimultaneously = maxSimultaneously;
-        this.__active = 0;
-        this.__queue = [];
-    }
-
-    /** @param { () => Promise<T> } func
-     * @template T
-     * @returns {Promise<T>}
-    */
-    async enqueue(func) {
-        if(++this.__active > this.maxSimultaneously) {
-            await new Promise(resolve => this.__queue.push(resolve));
-        }
-
-        try {
-            return await func();
-        } catch(err) {
-            throw err;
-        } finally {
-            this.__active--;
-            if(this.__queue.length) {
-                this.__queue.shift()();
-            }
-        }
-    }
-}
-
-const q = new Queue();
-
 //Blacklisted avatars
 const blacklistedavatars = config.blacklistedavatars;
 //whitelist the real giveaway bot and nogiveaway bot
@@ -64,7 +33,7 @@ client.on("guildCreate", guild => {
 client.on('guildMemberAdd', member => {
     // Send the message to a designated channel on a server:
     const channel = member.guild.channels.find(ch => ch.name === 'member-log');
-    q.enqueue(() =>checkForBlacklistedAvatarandBan(member));
+    checkForBlacklistedAvatarandBan(member)
 
     // Do nothing if the channel wasn't found on this server
     if (!channel){
@@ -97,8 +66,7 @@ client.on('message', msg => {
 client.login(config.token);
 
 //Check if username matches blacklist array
-async function checkforBlacklistedUsernameContentOrID(member){
-     await new Promise(res => setTimeout(res, 500));
+function checkforBlacklistedUsernameContentOrID(member){
     config.blacklistednames.forEach(item =>{
         var isBlacklisted = member.user.username.toLowerCase().includes(item.toString()) && member.user.id != whitelistedids[0] && member.user.id != whitelistedids[1];
         if(item.toString() == "magic"){
@@ -110,13 +78,13 @@ async function checkforBlacklistedUsernameContentOrID(member){
         }
         else{
             //Check if avatar matches blacklist
-            q.enqueue(() => checkForBlacklistedAvatar(member.user));
+            checkForBlacklistedAvatar(member.user);
         }
     });
 }
 
 //Builds blacklist array
- async function buildBlacklist(msg) {
+async function buildBlacklist(msg) {
     if (blacklistedids.length > 0 || bancount > 0 || blacklistedmatches > 0) {
         //reset fields,just incase as we only support one server for now per instance
         clearVars();
@@ -128,10 +96,10 @@ async function checkforBlacklistedUsernameContentOrID(member){
        list.fetchMembers().then(code => {
             code.members.forEach(member=>{
                 //Check if user has giveaway,ownerbit or magic in username and isnt in whitelist
-                q.enqueue(() => checkforBlacklistedUsernameContentOrID(member));
+                checkforBlacklistedUsernameContentOrID(member);
             });
         });
-      }
+    }
 }
 function addGuildtoDB(guildid){
     //Write db code here
@@ -144,8 +112,7 @@ function checkIfIDIsBlacklised(user){
            return true;
     });
 }
-async function checkForBlacklistedAvatar(user) {
-   await new Promise(res => setTimeout(res, 500));
+function checkForBlacklistedAvatar(user) {
     blacklistedavatars.forEach(function(item) {
         if (user.avatar != null && user.avatar.includes(item.toString())) {
             console.log("Adding blacklisted userid :" + user.id);
@@ -154,26 +121,24 @@ async function checkForBlacklistedAvatar(user) {
     });
 }
 
-async function checkForBlacklistedAvatarandBan(user) {
-    await new Promise(res => setTimeout(res, 500));
+function checkForBlacklistedAvatarandBan(user) {
     blacklistedavatars.forEach(function(item) {
         if (user.user.avatar != null && user.user.avatar.includes(item.toString())) {
             console.log("Adding blacklisted userid :" + user.id);
             blacklistedmatches = blacklistedids.push(user.user.id);
-            q.enqueue(() => banBlacklisted(null,user));
+            banBlacklisted(null,user)
         }
     });
 }
 
 async function banBlacklisted(msg,memberx) {
-    await new Promise(res => setTimeout(res, 500));
     if(msg != null){
         blacklistedids.forEach(async function(item) {
             await banUser(msg,msg.guild.member(item))
         });
     }
     else{
-        await banUser(msg,memberx)
+        banUser(msg,memberx)
     }
 }
 
