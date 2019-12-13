@@ -15,7 +15,7 @@ class Queue {
         this.__queue = [];
     }
 
-    /** @param { () => Promise<T> } func 
+    /** @param { () => Promise<T> } func
      * @template T
      * @returns {Promise<T>}
     */
@@ -68,6 +68,7 @@ client.on('guildMemberAdd', member => {
 
     // Do nothing if the channel wasn't found on this server
     if (!channel){
+        console.log(`Welcome to the server, ${member}`);
     }
     else{
         channel.send(`Welcome to the server, ${member}`);
@@ -97,7 +98,7 @@ client.login(config.token);
 
 //Check if username matches blacklist array
 async function checkforBlacklistedUsernameContentOrID(member){
-     await new Promise(res => setTimeout(res, 500)); 
+     await new Promise(res => setTimeout(res, 500));
     config.blacklistednames.forEach(item =>{
         var isBlacklisted = member.user.username.toLowerCase().includes(item.toString()) && member.user.id != whitelistedids[0] && member.user.id != whitelistedids[1];
         if(item.toString() == "magic"){
@@ -130,7 +131,7 @@ async function checkforBlacklistedUsernameContentOrID(member){
                 q.enqueue(() => checkforBlacklistedUsernameContentOrID(member));
             });
         });
-      }   
+      }
 }
 function addGuildtoDB(guildid){
     //Write db code here
@@ -144,7 +145,7 @@ function checkIfIDIsBlacklised(user){
     });
 }
 async function checkForBlacklistedAvatar(user) {
-   await new Promise(res => setTimeout(res, 500)); 
+   await new Promise(res => setTimeout(res, 500));
     blacklistedavatars.forEach(function(item) {
         if (user.avatar != null && user.avatar.includes(item.toString())) {
             console.log("Adding blacklisted userid :" + user.id);
@@ -168,7 +169,7 @@ async function banBlacklisted(msg,memberx) {
     await new Promise(res => setTimeout(res, 500));
     if(msg != null){
         blacklistedids.forEach(function(item) {
-            banUser(msg,msg.guild.member(item))
+            await banUser(msg,msg.guild.member(item))
         });
     }
     else{
@@ -217,6 +218,9 @@ function sendBanReport(msg){
     client.channels.get(msg.channel.id).send({
         embed: banConfirmationEmbedModlog
     });
+    }
+    else{
+        console.log("Ban task finished with total count: " + bancount)
     }
     //TODO add log channel configurtion commnd to code.
 
