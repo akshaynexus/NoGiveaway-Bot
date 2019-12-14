@@ -1,7 +1,8 @@
 //Import needed libraries and files
 const Discord = require('discord.js');
 const client = new Discord.Client();
-const config = require('./config.json')
+const config = require('./config.json');
+const mongoose = require('mongoose');
 //Global vars,will be removed once db integration is complete
 var list;
 var blacklistedmatches = 0;
@@ -134,6 +135,37 @@ async function checkforBlacklistedUsernameContentOrID(member){
 }
 function addGuildtoDB(guildid){
     //Write db code here
+    mongoose.connect('mongodb://localhost/nogiveaway', function (err) {
+        	if (err) throw err;
+
+	      console.log('Successfully connected');
+    });
+    
+    var globalbacklist = mongoose.Schema({
+		blackListedUserIncludes: String,
+		bannedspamids: Number
+	});
+    
+    var guilddata = mongoose.Schema({
+		GuildName: String,
+        GuildID: String,
+        CustomBlacklist: Number,
+        bancount: Number,
+        blacklistedidshistory: Array,
+        blacklistedids: Number,
+		blacklistedmatches: Number
+	});
+    
+    var queuedrequest = mongoose.Schema({
+        GuildID: Number,
+        RequestedAction: String
+	});  
+    
+    var Blacklist = mongoose.model('Blacklist', globalbacklist);
+    var Datag = mongoose.model('Datag', guilddata);
+    var Queuer = mongoose.model('Queuer', queuedrequest);
+    
+    
 
 }
 
