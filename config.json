@@ -22,9 +22,10 @@
         "abba8ab2adb89992118a1016ef202d16",
         "3d34806a417517eccb8c3954b55d8cef",
         "077a763d8dd460516d3e2f6bc4c5a9b4",
-        "a877a0c570c16de3dc300781b9b50bd1"
+        "a877a0c570c16de3dc300781b9b50bd1",
+        "b97f153f3aadc5ae28cb1461d3f2be0c"
     ],
     "whitelistedids":[294882584201003009,653578214685409301],
     "blacklisedids" : [653861129558425623],
-    "blacklistednames":["ownerbit","giveaway","giveawaybot","magic","aerobit","avrobit","fxchange"]
+    "blacklistednames":["ownerbit","giveaway","giveawaybot","magic","aerobit","avrobit","fxchange","egtbit"]
 }
