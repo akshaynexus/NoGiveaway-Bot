@@ -36,7 +36,7 @@ client.on('guildMemberAdd', member => {
 
     // Do nothing if the channel wasn't found on this server
     if (!channel){
-        console.log(`Welcome to the server, ${member}`);
+        console.log(`Welcome to the server Name: ${member.guild.name} Server ID: ${member.guild.id},Username: ${member.guild.username} UserID :${memmber.guild.user.id}`);
     }
     else{
         channel.send(`Welcome to the server, ${member}`);
