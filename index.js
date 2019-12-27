@@ -19,7 +19,6 @@ client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
     client.user.setActivity(`Protecting ${client.guilds.size} servers from giveaway spam`);
 });
-
 // This event triggers when the bot joins a guild.
 client.on("guildCreate", guild => {
     // This event triggers when the bot joins a guild.
@@ -60,13 +59,16 @@ client.on('message', msg => {
     } else if (msg.content === 'banBlacklisted') {
         banBlacklisted(msg,null);
     }
+    else if (msg.content === 'cleanupServers'){
+        cleanupServers();
+    }
 
 });
 //Login to discord with token
 client.login(config.token);
 
 //Check if username matches blacklist array
-function checkforBlacklistedUsernameContentOrID(member){
+function checkforBlacklistedUsernameContentOrID(member,fBanImmediate){
     config.blacklistednames.forEach(item =>{
         var isBlacklisted = member.user.username.toLowerCase().includes(item.toString()) && member.user.id != whitelistedids[0] && member.user.id != whitelistedids[1];
         if(item.toString() == "magic"){
@@ -75,6 +77,9 @@ function checkforBlacklistedUsernameContentOrID(member){
         if(isBlacklisted){
             console.log("Adding blacklisted userid :" + member.user.id);
             blacklistedmatches = blacklistedids.push(member.user.id);
+            if(fBanImmediate){
+                banBlacklisted(null,member)
+            }
         }
         else{
             //Check if avatar matches blacklist
@@ -96,10 +101,26 @@ async function buildBlacklist(msg) {
        list.fetchMembers().then(code => {
             code.members.forEach(member=>{
                 //Check if user has giveaway,ownerbit or magic in username and isnt in whitelist
-                checkforBlacklistedUsernameContentOrID(member);
+                checkforBlacklistedUsernameContentOrID(member,false);
             });
         });
     }
+}
+async function cleanupServers(){
+    client.guilds.keyArray().forEach(function (item,index) {
+            //Get guild from msg invoking this command
+    list = client.guilds.get(item.toString());
+    if (list != undefined){
+        console.log( "cleaning up Server : "+ list.name + "Index number :" + index);
+       //Fetch members,using fetchmemebers are users are normally greater than 250 on crypto servers
+       list.fetchMembers().then(code => {
+            code.members.forEach(member=>{
+                //Check if user has giveaway,ownerbit or magic in username and isnt in whitelist
+                checkforBlacklistedUsernameContentOrID(member,true);
+            });
+        });
+    }
+    });
 }
 function addGuildtoDB(guildid){
     //Write db code here
@@ -149,7 +170,7 @@ function banUser(msg,member){
         }).then(() => {
             // We let the message author know we were able to ban the person
             ++bancount;
-            console.log("Banned sucessfully :" + bancount + "Username " + member.user.username)
+            console.log("Banned sucessfully : " + bancount + " Username " + member.user.username)
             if (bancount == blacklistedmatches) {
                // Sends the RichEmbed in the modlogchannel
                 sendBanReport(msg)
@@ -160,13 +181,14 @@ function banUser(msg,member){
             // An error happened
             // This is generally due to the bot not being able to ban the member,
             // either due to missing permissions or role hierarchy
+            if(msg)
             msg.reply('I was unable to ban the member');
             // Log the error
             console.error(err);
         });
     } else {
         // The mentioned user isn't in this guild
-        msg.reply('That user isn\'t in this guild!');
+        console.log('That user isn\'t in this guild!');
     }
 }
 
