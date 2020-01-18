@@ -7,7 +7,7 @@ var list;
 var blacklistedmatches = 0;
 var bancount = 0;
 var blacklistedids = [];
-
+var detectedavatarhashes = [];
 //Blacklisted avatars
 const blacklistedavatars = config.blacklistedavatars;
 //whitelist the real giveaway bot and nogiveaway bot
@@ -33,7 +33,7 @@ client.on('guildMemberAdd', member => {
     // Send the message to a designated channel on a server:
     const channel = member.guild.channels.find(ch => ch.name === 'member-log');
     checkForBlacklistedAvatarandBan(member)
-
+    // member.user.createdTimestamp
     // Do nothing if the channel wasn't found on this server
     if (!channel){
         console.log(`Welcome to the server Name: ${member.guild.name} Server ID: ${member.guild.id},Owner: ${member.guild.ownerID} UserID :${member} Username: ${member.user.username}#${member.user.discriminator} Username of owner: ${member.guild.owner.user.username}#${member.guild.owner.user.discriminator}  `);
@@ -83,7 +83,11 @@ function checkforBlacklistedUsernameContentOrID(member,fBanImmediate){
         }
         else{
             //Check if avatar matches blacklist
-            checkForBlacklistedAvatar(member.user);
+            if(fBanImmediate)
+                checkForBlacklistedAvatarandBan(member);
+            else
+               checkForBlacklistedAvatar(member);
+
         }
     });
 }
@@ -106,6 +110,7 @@ async function buildBlacklist(msg) {
         });
     }
 }
+
 async function cleanupServers(){
     client.guilds.keyArray().forEach(function (item,index) {
             //Get guild from msg invoking this command
@@ -181,10 +186,14 @@ function banUser(msg,member){
             // An error happened
             // This is generally due to the bot not being able to ban the member,
             // either due to missing permissions or role hierarchy
-            if(msg)
+            clearVars();
+            if(msg){
             msg.reply('I was unable to ban the member');
+            }
             // Log the error
             console.error(err);
+            return false
+
         });
     } else {
         // The mentioned user isn't in this guild
