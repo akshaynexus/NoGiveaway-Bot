@@ -21,9 +21,10 @@ client.login(config.token);
 
 
 function checkForBlacklistAvatar() {
-    client.fetchUser("654876386493857802").then(myUser => {
+    client.fetchUser("669262458891796482").then(myUser => {
+        console.log(myUser.avatar);
+
         blacklistedavatars.forEach(function (item,index) {
-            console.log(myUser.avatar);
             if( myUser.avatar != null && myUser.avatar.includes(item.toString())){
             console.log("Detected blacklisted at index " +  index)
             }

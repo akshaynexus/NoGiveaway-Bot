@@ -7,13 +7,15 @@ var list;
 var blacklistedmatches = 0;
 var bancount = 0;
 var blacklistedids = [];
+var blacklistedavatarsxxx = [];
 var detectedavatarhashes = [];
+const fs = require('fs');
+
 //Blacklisted avatars
 const blacklistedavatars = config.blacklistedavatars;
 //whitelist the real giveaway bot and nogiveaway bot
 const whitelistedids = config.whitelistedids;
-var blacklistedidsconf = config.blacklisedids;
-
+var blacklistedidsconf = config.blacklistedids;
 //Executes when connected successfully after login with token
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
@@ -35,8 +37,12 @@ client.on('guildMemberAdd', member => {
     checkForBlacklistedAvatarandBan(member)
     // member.user.createdTimestamp
     // Do nothing if the channel wasn't found on this server
+    if(member.guild.id == 589180144997105674 ){
+        console.log()
+        blacklistedavatarsxxx.push(member.user.avatar)
+    }
     if (!channel){
-        console.log(`Welcome to the server Name: ${member.guild.name} Server ID: ${member.guild.id},Owner: ${member.guild.ownerID} UserID :${member} Username: ${member.user.username}#${member.user.discriminator} Username of owner: ${member.guild.owner.user.username}#${member.guild.owner.user.discriminator}  `);
+        console.log(`Welcome to the server Name: ${member.guild.name} Server ID: ${member.guild.id},Owner: ${member.guild.ownerID} UserID :${member} Username: ${member.user.username}#${member.user.discriminator} Username of owner: ${member.guild.owner.user.username}#${member.guild.owner.user.discriminator} Timestamp ${member.user.createdTimestamp}  `);
     }
     else{
         channel.send(`Welcome to the server, ${member}`);
@@ -53,14 +59,38 @@ client.on('message', msg => {
         msg.reply('pong');
     } else if (msg.content === 'buildblacklist') {
         buildBlacklist(msg);
-        msg.reply("Built Blacklist");
     } else if (msg.content === 'getblacklistcount') {
-        msg.reply(blacklistedmatches);
-    } else if (msg.content === 'banBlacklisted') {
+        msg.reply(blacklistedids.length);
+        fs.writeFile("output.json", JSON.stringify(blacklistedids), 'utf8', function (err) {
+            if (err) {
+                console.log("An error occured while writing JSON Object to File.");
+                return console.log(err);
+            }
+         
+            console.log("JSON file has been saved.");
+        });
+    } 
+    else if (msg.content === 'getspecialcount') {
+        msg.reply(blacklistedids.length);
+        fs.writeFile("output.json", JSON.stringify(blacklistedavatarsxxx), 'utf8', function (err) {
+            if (err) {
+                console.log("An error occured while writing JSON Object to File.");
+                return console.log(err);
+            }
+         
+            console.log("JSON file has been saved.");
+        });
+    }
+    else if (msg.content === 'banBlacklisted') {
         banBlacklisted(msg,null);
     }
+    else if (msg.content === 'clearList') {
+        clearVars();
+        msg.reply(blacklistedids.length);
+
+    }
     else if (msg.content === 'cleanupServers'){
-        cleanupServers();
+        cleanupServers(msg);
     }
 
 });
@@ -69,27 +99,28 @@ client.login(config.token);
 
 //Check if username matches blacklist array
 function checkforBlacklistedUsernameContentOrID(member,fBanImmediate){
+    var isBlacklisted;
     config.blacklistednames.forEach(item =>{
-        var isBlacklisted = member.user.username.toLowerCase().includes(item.toString()) && member.user.id != whitelistedids[0] && member.user.id != whitelistedids[1];
+        isBlacklisted = member.user.username.toLowerCase().includes(item.toString()) && member.user.id != whitelistedids[0] && member.user.id != whitelistedids[1];
         if(item.toString() == "magic"){
             isBlacklisted =  member.user.username.toLowerCase() == item.toString() && member.user.id != whitelistedids[0] && member.user.id != whitelistedids[1]
         }
-        if(isBlacklisted){
-            console.log("Adding blacklisted userid :" + member.user.id);
-            blacklistedmatches = blacklistedids.push(member.user.id);
-            if(fBanImmediate){
-                banBlacklisted(null,member)
-            }
-        }
-        else{
-            //Check if avatar matches blacklist
-            if(fBanImmediate)
-                checkForBlacklistedAvatarandBan(member);
-            else
-               checkForBlacklistedAvatar(member);
-
-        }
     });
+    if(isBlacklisted){
+        console.log("Adding blacklisted userid :" + member.user.id+ " Username: " + member.user.username);
+        blacklistedmatches = blacklistedids.push(member.user.id);
+        if(fBanImmediate){
+            banBlacklisted(null,member)
+        }
+    }
+    else{
+        //Check if avatar matches blacklist
+        if(fBanImmediate)
+            checkForBlacklistedAvatarandBan(member);
+        else
+           checkForBlacklistedAvatar(member);
+
+    }
 }
 
 //Builds blacklist array
@@ -108,10 +139,12 @@ async function buildBlacklist(msg) {
                 checkforBlacklistedUsernameContentOrID(member,false);
             });
         });
+        msg.reply("Built Blacklist");
+
     }
 }
 
-async function cleanupServers(){
+async function cleanupServers(msg){
     client.guilds.keyArray().forEach(function (item,index) {
             //Get guild from msg invoking this command
     list = client.guilds.get(item.toString());
@@ -133,33 +166,55 @@ function addGuildtoDB(guildid){
 }
 
 function checkIfIDIsBlacklised(user){
-    blacklistedidsconf.forEach(function(item){
-        if(user.id == item)
+    blacklistedidsconf.forEach(function(item,index){
+        if(user.id.toString() == item.toString())
            return true;
     });
 }
 function checkForBlacklistedAvatar(user) {
-    blacklistedavatars.forEach(function(item) {
-        if (user.avatar != null && user.avatar.includes(item.toString())) {
-            console.log("Adding blacklisted userid :" + user.id);
-            blacklistedmatches = blacklistedids.push(user.id);
-        }
-    });
+    
+    if((new Date().getTime() - user.user.createdTimestamp < 4.32e+8) && false){
+        console.log("Adding blacklisted userid :" + user.user.id+ " Username: " + user.user.username);
+        blacklistedmatches = blacklistedids.push(user.user.id);  
+    }
+    else if (checkIfIDIsBlacklised(user.user)){
+        console.log("Adding blacklisted userid :" + user.user.id);
+        blacklistedmatches = blacklistedids.push(user.user.id);
+    }
+    else{
+        blacklistedavatars.forEach(function(item) {
+             if (user.user.avatar != null && user.user.avatar.includes(item.toString())) {
+                console.log("Adding blacklisted userid :" + user.user.id);
+                blacklistedmatches = blacklistedids.push(user.user.id);
+            }
+            // else{
+            //     console.log("Avatar isnt matching " + user.user.avatar)
+            // }
+        });
+    }
+
 }
 
 function checkForBlacklistedAvatarandBan(user) {
-    blacklistedavatars.forEach(function(item) {
-        if (user.user.avatar != null && user.user.avatar.includes(item.toString())) {
-            console.log("Adding blacklisted userid :" + user.id);
-            blacklistedmatches = blacklistedids.push(user.user.id);
-            banBlacklisted(null,user)
-        }
-    });
+    if((new Date().getTime() - user.user.createdTimestamp < 4.32e+8)&& false){
+        console.log("Adding blacklisted userid :" + user.id+ " Username: " + user.username);
+        blacklistedmatches = blacklistedids.push(user.id);  
+    }
+    else{
+        blacklistedavatars.forEach(function(item) {
+             if (user.avatar != null && user.avatar.includes(item.toString())) {
+                console.log("Adding blacklisted userid :" + user.id);
+                blacklistedmatches = blacklistedids.push(user.id);
+                banBlacklisted(null,user)
+            }
+        });
+    }
 }
 
 async function banBlacklisted(msg,memberx) {
     if(msg != null){
-        blacklistedids.forEach(async function(item) {
+        var uniqueArray = blacklistedids.slice().sort(function(a,b){return a > b}).reduce(function(a,b){if (a.slice(-1)[0] !== b) a.push(b);return a;},[]);
+        uniqueArray.forEach(async function(item) {
             await banUser(msg,msg.guild.member(item))
         });
     }
@@ -176,6 +231,8 @@ function banUser(msg,member){
             // We let the message author know we were able to ban the person
             ++bancount;
             console.log("Banned sucessfully : " + bancount + " Username " + member.user.username)
+            // if(msg)
+            //     msg.reply("Banned sucessfully : " + bancount + " Username " + member.user.username)
             if (bancount == blacklistedmatches) {
                // Sends the RichEmbed in the modlogchannel
                 sendBanReport(msg)
