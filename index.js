@@ -2,25 +2,38 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
 const config = require('./config.json')
+var util = require('util');
+const fs = require('fs');
+
 //Global vars,will be removed once db integration is complete
 var list;
 var blacklistedmatches = 0;
 var bancount = 0;
 var blacklistedids = [];
 var blacklistedavatarsxxx = [];
-var detectedavatarhashes = [];
-const fs = require('fs');
 
 //Blacklisted avatars
 const blacklistedavatars = config.blacklistedavatars;
 //whitelist the real giveaway bot and nogiveaway bot
 const whitelistedids = config.whitelistedids;
 var blacklistedidsconf = config.blacklistedids;
+
+//debug.log log code
+var logFile = fs.createWriteStream('debug.log', { flags: 'a' });
+  // Or 'w' to truncate the file every time the process starts.
+var logStdout = process.stdout;
+
+console.log = function () {
+  logFile.write(util.format.apply(null, arguments) + '\n');
+  logStdout.write(util.format.apply(null, arguments) + '\n');
+}
+
 //Executes when connected successfully after login with token
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
     client.user.setActivity(`Protecting ${client.guilds.size} servers from giveaway spam`);
 });
+
 // This event triggers when the bot joins a guild.
 client.on("guildCreate", guild => {
     // This event triggers when the bot joins a guild.
@@ -34,7 +47,8 @@ client.on("guildCreate", guild => {
 client.on('guildMemberAdd', member => {
     // Send the message to a designated channel on a server:
     const channel = member.guild.channels.find(ch => ch.name === 'member-log');
-    checkForBlacklistedAvatarandBan(member)
+    CheckBLExtra(member,true)
+    
     // member.user.createdTimestamp
     // Do nothing if the channel wasn't found on this server
     if(member.guild.id == 589180144997105674 ){
@@ -60,27 +74,9 @@ client.on('message', msg => {
     } else if (msg.content === 'buildblacklist') {
         buildBlacklist(msg);
     } else if (msg.content === 'getblacklistcount') {
+        saveblacklist();
         msg.reply(blacklistedids.length);
-        fs.writeFile("output.json", JSON.stringify(blacklistedids), 'utf8', function (err) {
-            if (err) {
-                console.log("An error occured while writing JSON Object to File.");
-                return console.log(err);
-            }
-         
-            console.log("JSON file has been saved.");
-        });
     } 
-    else if (msg.content === 'getspecialcount') {
-        msg.reply(blacklistedids.length);
-        fs.writeFile("output.json", JSON.stringify(blacklistedavatarsxxx), 'utf8', function (err) {
-            if (err) {
-                console.log("An error occured while writing JSON Object to File.");
-                return console.log(err);
-            }
-         
-            console.log("JSON file has been saved.");
-        });
-    }
     else if (msg.content === 'banBlacklisted') {
         banBlacklisted(msg,null);
     }
@@ -94,11 +90,22 @@ client.on('message', msg => {
     }
 
 });
+
 //Login to discord with token
 client.login(config.token);
 
+function saveblacklist(){
+    fs.writeFile("output.json", JSON.stringify(blacklistedids), 'utf8', function (err) {
+        if (err) {
+            console.log("An error occured while writing JSON Object to File.");
+            return console.log(err);
+        }
+        console.log("JSON file has been saved.");
+    });
+}
+
 //Check if username matches blacklist array
-function checkforBlacklistedUsernameContentOrID(member,fBanImmediate){
+function CheckBLMatch(member,fBanImmediate){
     var isBlacklisted;
     config.blacklistednames.forEach(item =>{
         isBlacklisted = member.user.username.toLowerCase().includes(item.toString()) && member.user.id != whitelistedids[0] && member.user.id != whitelistedids[1];
@@ -114,12 +121,8 @@ function checkforBlacklistedUsernameContentOrID(member,fBanImmediate){
         }
     }
     else{
-        //Check if avatar matches blacklist
-        if(fBanImmediate)
-            checkForBlacklistedAvatarandBan(member);
-        else
-           checkForBlacklistedAvatar(member);
-
+        //Check avatar
+        CheckBLExtra(member,fBanImmediate);
     }
 }
 
@@ -136,7 +139,7 @@ async function buildBlacklist(msg) {
        list.fetchMembers().then(code => {
             code.members.forEach(member=>{
                 //Check if user has giveaway,ownerbit or magic in username and isnt in whitelist
-                checkforBlacklistedUsernameContentOrID(member,false);
+                CheckBLMatch(member,false);
             });
         });
         msg.reply("Built Blacklist");
@@ -146,18 +149,18 @@ async function buildBlacklist(msg) {
 
 async function cleanupServers(msg){
     client.guilds.keyArray().forEach(function (item,index) {
-            //Get guild from msg invoking this command
+    //Get guild from msg invoking this command
     list = client.guilds.get(item.toString());
     if (list != undefined){
         console.log( "cleaning up Server : "+ list.name + "Index number :" + index);
-       //Fetch members,using fetchmemebers are users are normally greater than 250 on crypto servers
-       list.fetchMembers().then(code => {
+        //Fetch members,using fetchmemebers are users are normally greater than 250 on crypto servers
+        list.fetchMembers().then(code => {
             code.members.forEach(member=>{
                 //Check if user has giveaway,ownerbit or magic in username and isnt in whitelist
-                checkforBlacklistedUsernameContentOrID(member,true);
+                CheckBLMatch(member,true);
             });
         });
-    }
+        }
     });
 }
 function addGuildtoDB(guildid){
@@ -171,41 +174,26 @@ function checkIfIDIsBlacklised(user){
            return true;
     });
 }
-function checkForBlacklistedAvatar(user) {
-    
-    if((new Date().getTime() - user.user.createdTimestamp < 4.32e+8) && false){
-        console.log("Adding blacklisted userid :" + user.user.id+ " Username: " + user.user.username);
-        blacklistedmatches = blacklistedids.push(user.user.id);  
+
+
+function CheckBLExtra(member,fBanImmediate) {
+    if((new Date().getTime() - member.user.createdTimestamp < 4.32e+8)&& false){
+        console.log("Adding blacklisted userid :" + member.user.id+ " Username: " + member.user.username);
+        blacklistedmatches = blacklistedids.push(member.user.id);  
     }
-    else if (checkIfIDIsBlacklised(user.user)){
-        console.log("Adding blacklisted userid :" + user.user.id);
-        blacklistedmatches = blacklistedids.push(user.user.id);
+    else if (checkIfIDIsBlacklised(member.user)){
+        console.log("Adding blacklisted userid :" + member.user.id);
+        blacklistedmatches = blacklistedids.push(member.user.id);
+        if(fBanImmediate)
+            banBlacklisted(null,member)
     }
     else{
         blacklistedavatars.forEach(function(item) {
-             if (user.user.avatar != null && user.user.avatar.includes(item.toString())) {
-                console.log("Adding blacklisted userid :" + user.user.id);
-                blacklistedmatches = blacklistedids.push(user.user.id);
-            }
-            // else{
-            //     console.log("Avatar isnt matching " + user.user.avatar)
-            // }
-        });
-    }
-
-}
-
-function checkForBlacklistedAvatarandBan(user) {
-    if((new Date().getTime() - user.user.createdTimestamp < 4.32e+8)&& false){
-        console.log("Adding blacklisted userid :" + user.id+ " Username: " + user.username);
-        blacklistedmatches = blacklistedids.push(user.id);  
-    }
-    else{
-        blacklistedavatars.forEach(function(item) {
-             if (user.avatar != null && user.avatar.includes(item.toString())) {
-                console.log("Adding blacklisted userid :" + user.id);
-                blacklistedmatches = blacklistedids.push(user.id);
-                banBlacklisted(null,user)
+             if (member.user.avatar != null && member.user.avatar.includes(item.toString())) {
+                console.log("Adding blacklisted userid :" + member.user.id);
+                blacklistedmatches = blacklistedids.push(member.user.id);
+                if(fBanImmediate)
+                    banBlacklisted(null,member)
             }
         });
     }
@@ -213,8 +201,7 @@ function checkForBlacklistedAvatarandBan(user) {
 
 async function banBlacklisted(msg,memberx) {
     if(msg != null){
-        var uniqueArray = blacklistedids.slice().sort(function(a,b){return a > b}).reduce(function(a,b){if (a.slice(-1)[0] !== b) a.push(b);return a;},[]);
-        uniqueArray.forEach(async function(item) {
+        blacklistedids.forEach(async function(item) {
             await banUser(msg,msg.guild.member(item))
         });
     }
@@ -231,8 +218,6 @@ function banUser(msg,member){
             // We let the message author know we were able to ban the person
             ++bancount;
             console.log("Banned sucessfully : " + bancount + " Username " + member.user.username)
-            // if(msg)
-            //     msg.reply("Banned sucessfully : " + bancount + " Username " + member.user.username)
             if (bancount == blacklistedmatches) {
                // Sends the RichEmbed in the modlogchannel
                 sendBanReport(msg)
@@ -268,15 +253,15 @@ function sendBanReport(msg){
         **Action**: Ban
         **Bancount**: ${bancount}
         **Reason**: SpamBot`);
-    client.channels.get(msg.channel.id).send({
-        embed: banConfirmationEmbedModlog
-    });
+        client.channels.get(msg.channel.id).send({
+            embed: banConfirmationEmbedModlog
+         });
     }
-    else{
+    else
+    {
         console.log("Ban task finished with total count: " + bancount)
     }
     //TODO add log channel configurtion commnd to code.
-
 }
 
 //Reset global vars
