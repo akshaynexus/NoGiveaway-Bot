@@ -19,6 +19,6 @@
   "homepage": "https://github.com/akshaynexus/NoGiveaway-Bot#readme",
   "dependencies": {
     "discord.js": "^11.5.1",
-    "mongoose": "^5.8.0"
+    "mongoose": "^5.8.9"
   }
 }

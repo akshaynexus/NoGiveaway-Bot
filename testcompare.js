@@ -16,19 +16,43 @@ client.on('ready', () => {
     client.user.setActivity(`Protecting ${client.guilds.size} servers from giveaway spam`);
     list = client.guilds.get("455359252010237971");
     checkForBlacklistAvatar();
+    // console.log(client.guilds.keyArray().toString());
+    // cleanupServers();
 });
 client.login(config.token);
 
 
 function checkForBlacklistAvatar() {
-    client.fetchUser("654876386493857802").then(myUser => {
+    client.fetchUser("675024065907523600").then(myUser => {
+        console.log(myUser.avatarURL)
+        console.log(myUser.avatar)
         blacklistedavatars.forEach(function (item,index) {
+        if(myUser.avatar != null && myUser.avatar.includes(item.toString())){
             console.log(myUser.avatar);
-            if( myUser.avatar != null && myUser.avatar.includes(item.toString())){
             console.log("Detected blacklisted at index " +  index)
             }
         });
 });
+}
+async function cleanupServers(){
+    client.guilds.keyArray().forEach(function (item,index) {
+            //Get guild from msg invoking this command
+    list = client.guilds.get(item.toString());
+    console.log(list.name + "indexno " + index)
+
+    if(index == 12){
+        const role = list.roles.find("name", "NoGiveaway");
+        console.log(list.roles[1])
+        console.log(list.channels.forEach(function (item,index) {
+            // if(item.type == "text" && item.permissionsFor(role).has("SEND_MESSAGES"))
+            // console.log(item.name)
+            
+        }))
+
+    }
+
+
+    });
 }
 async function buildBlacklist() {
     if (list != undefined)

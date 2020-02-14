@@ -1,4 +1,6 @@
 {
     "GuildID":1234,
-    "RequestedAction":"Commandhere"
+    "RequestedAction":"Commandhere",
+    "Timestamp":213123123123,
+    "iscompleted":false
 }
