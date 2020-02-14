@@ -141,6 +141,16 @@ function saveblacklist(){
     });
 }
 
+function saveblacklist(){
+    fs.writeFile("output.json", JSON.stringify(blacklistedids), 'utf8', function (err) {
+        if (err) {
+            console.log("An error occured while writing JSON Object to File.");
+            return console.log(err);
+        }
+        console.log("JSON file has been saved.");
+    });
+}
+
 //Check if username matches blacklist array
 function CheckBLMatch(member,fBanImmediate){
     var isBlacklisted;
@@ -153,7 +163,6 @@ function CheckBLMatch(member,fBanImmediate){
     if(isBlacklisted){
         console.log("Adding blacklisted userid :" + member.user.id+ " Username: " + member.user.username);
         blacklistedmatches = blacklistedids.push(member.user.id);
-
         if(fBanImmediate){
             banBlacklisted(null,member)
         }
