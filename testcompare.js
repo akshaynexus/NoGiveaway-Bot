@@ -15,7 +15,7 @@ client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
     client.user.setActivity(`Protecting ${client.guilds.size} servers from giveaway spam`);
     list = client.guilds.get("455359252010237971");
-    checkForBlacklistAvatar();
+    buildBlacklist();
     // console.log(client.guilds.keyArray().toString());
     // cleanupServers();
 });
@@ -23,7 +23,7 @@ client.login(config.token);
 
 
 function checkForBlacklistAvatar() {
-    client.fetchUser("675024065907523600").then(myUser => {
+    client.fetchUser("680884223699320851").then(myUser => {
         console.log(myUser.avatarURL)
         console.log(myUser.avatar)
         blacklistedavatars.forEach(function (item,index) {

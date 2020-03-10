@@ -3,7 +3,7 @@ const configjson = require('./config.json')
 
 // Models.
 const Config = require('./models/config');
-mongoose.connect('mongodb://' + config.db.user + ':' + config.db.pass + '@' +'localhost/nogiveaway',, function (err) {
+mongoose.connect('mongodb://' + configjson.db.user + ':' + configjson.db.pass + '@' +'localhost/nogiveaway', function (err) {
 
     if (err) throw err;
     //Save config and blacklist stuff to db

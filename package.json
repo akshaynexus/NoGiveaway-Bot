@@ -18,7 +18,11 @@
   },
   "homepage": "https://github.com/akshaynexus/NoGiveaway-Bot#readme",
   "dependencies": {
+    "chalk": "^3.0.0",
     "discord.js": "^11.5.1",
     "mongoose": "^5.8.9"
+  },
+  "devDependencies": {
+    "mocha": "^7.1.0"
   }
 }
