@@ -7,8 +7,6 @@ const fs = require('fs');
 const DatabaseUtil = require('./helpers/dbhelper');
 const DiscordUtil = require('./helpers/discordhelper');
 const BlacklistUtil = require('./helpers/blacklistcheck');
-//Global vars,will be removed once db integration is complete
-var list;
 var bancount = 0;
 var blacklistedids = [];
 
@@ -98,7 +96,7 @@ async function buildBlacklist(msg) {
         clearVars();
     }
     //Get guild from msg invoking this command
-    list = msg.guild;
+    var list = msg.guild;
     if (list != undefined){
        //Fetch members,using fetchmemebers are users are normally greater than 250 on crypto servers
        list.fetchMembers().then(code => {
@@ -117,7 +115,7 @@ async function buildBlacklist(msg) {
 function cleanupServers(){
     for(var i=0;i<client.guilds.keyArray().length;i++){
     //Get guild from msg invoking this command
-    list = client.guilds.get(client.guilds.keyArray()[i].toString());
+    var list = client.guilds.get(client.guilds.keyArray()[i].toString());
     if (list != undefined){
         console.log( "cleaning up Server : "+ list.name + " Index number : " + i);
         list.fetchMembers().then(code => {
