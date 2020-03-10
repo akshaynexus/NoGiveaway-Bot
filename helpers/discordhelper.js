@@ -24,7 +24,7 @@ function getMember(client,serverid,userid){
 
 function sendBanReport(client,msg){
     if(msg != null){
-        const banConfirmationEmbedModlog = new Discord.RichEmbed()
+        const banConfirmationEmbedModlog = new Discord.MessageEmbed()
         .setAuthor(`Banned Spammers by **${msg.author.username}#${msg.author.discriminator}**`, msg.author.displayAvatarURL)
         .setColor('RED')
         .setTimestamp()
