@@ -9,7 +9,6 @@ const DiscordUtil = require('./helpers/discordhelper');
 const BlacklistUtil = require('./helpers/blacklistcheck');
 //Global vars,will be removed once db integration is complete
 var list;
-var blacklistedmatches = 0;
 var bancount = 0;
 var blacklistedids = [];
 
@@ -94,7 +93,7 @@ client.on('userUpdate', (oldUser,newUser) => {
 
 //Builds blacklist array
 async function buildBlacklist(msg) {
-    if (blacklistedids.length > 0 || bancount > 0 || blacklistedmatches > 0) {
+    if (blacklistedids.length > 0 || bancount > 0) {
         //reset fields,just incase as we only support one server for now per instance
         clearVars();
     }
@@ -143,5 +142,4 @@ function clearVars(){
     DatabaseUtil.saveBlacklistedIDS(blacklistedids);
     blacklistedids = [];
     bancount = 0;
-    blacklistedmatches = 0;
 }
