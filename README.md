@@ -2,14 +2,12 @@
 [![Actions Status](https://github.com/akshaynexus/NoGiveaway-Bot/workflows/Node.js%20CI/badge.svg)](https://github.com/akshaynexus/NoGiveaway-Bot/actions)
 [![](https://tokei.rs/b1/github/akshaynexus/NoGiveaway-Bot)]()
 [![GitHub contributors](https://img.shields.io/github/contributors/akshaynexus/NoGiveaway-Bot.svg)](https://GitHub.com/akshaynexus/NoGiveaway-Bot/graphs/contributors/)
-
 [![GitHub issues](https://img.shields.io/github/issues/akshaynexus/NoGiveaway-Bot.svg)](https://GitHub.com/akshaynexus/NoGiveaway-Bot/issues/)
+
 [![GitHub issues-closed](https://img.shields.io/github/issues-closed/akshaynexus/NoGiveaway-Bot.svg)](https://GitHub.com/akshaynexus/NoGiveaway-Bot/issues?q=is%3Aissue+is%3Aclosed)
 [![GitHub pull-requests](https://img.shields.io/github/issues-pr/akshaynexus/NoGiveaway-Bot.svg)](https://GitHub.com/akshaynexus/NoGiveaway-Bot/pull/)
-
 [![GitHub pull-requests closed](https://img.shields.io/github/issues-pr-closed/akshaynexus/NoGiveaway-Bot.svg)](https://GitHub.com/akshaynexus/NoGiveaway-Bot/pull/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
-[![HitCount](http://hits.dwyl.io/akshaynexus/badges.svg)](http://hits.dwyl.io/akshaynexus/badges)
 
 
 ## How to setup mongodb for bot
