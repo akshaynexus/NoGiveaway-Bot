@@ -32,7 +32,10 @@ const BotImperArr = [
     "Еnеrgі UpdаtеWаllеtВОT",
     "Еnеrgі NеwsВОT",
     "ZCoin NеwsВОT",
-    "Еnеrgі WаllеtUpdаtеВОT"
+    "Еnеrgі WаllеtUpdаtеВОT",
+    "SmаrtСаsh WalletUpdateBOT",
+    "SmаrtСаsh UpdateWallet BOT",
+    "SmаrtСаsh Nеws ВОТ"
     ];
 const NotBotArr= [
     "ZCoin Nеws",

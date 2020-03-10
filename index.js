@@ -41,14 +41,14 @@ client.on("guildCreate", guild => {
 // Create an event listener for new guild members
 client.on('guildMemberAdd', member => {
     // Send the message to a designated channel on a server:
-    const channel = member.guild.channels.find(ch => ch.name === 'member-log');
+    // const channel = member.guild.channels.find(ch => ch.name === 'member-log');
     DatabaseUtil.AddJoinToCollection(member);
-    if (!channel){
+    // if (!channel){
         console.log(`Welcome to the server Name: ${member.guild.name} Server ID: ${member.guild.id},UserID :${member} Username: ${member.user.username}#${member.user.discriminator} Join timestamp ${member.user.createdTimestamp}  `);
-    }
-    else{
-        channel.send(`Welcome to the server, ${member}`);
-    }
+    // }
+    // else{
+    //     channel.send(`Welcome to the server, ${member}`);
+    // }
     if(BlacklistUtil.CheckBLMatch(member.user.username,member.user.avatar,member.user.bot,member.user.id))
         DiscordUtil.banUser(null,member,false,bancount);
 });
