@@ -20,7 +20,7 @@ console.log = function () {
   logStdout.write(util.format.apply(null, arguments) + '\n');
 }
 //Database code
-DatabaseUtil.mongoose.connect('mongodb://' + config.db.user + ':' + config.db.pass + '@' +'localhost/nogiveaway', {useNewUrlParser: true}, function (err) {
+DatabaseUtil.mongoose.connect('mongodb://' + config.db.user + ':' + config.db.pass + '@' +'localhost/nogiveaway', {useNewUrlParser: true,useUnifiedTopology: true}, function (err) {
     if (err) throw err;
     client.login(config.token);    
 });
