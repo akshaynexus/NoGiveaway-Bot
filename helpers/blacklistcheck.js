@@ -93,7 +93,14 @@ function hasBlacklistedUsername(username,isBot){
 function CheckBLMatch(username,useravatar=null ,isBot=false,userid=0){
     return hasBlacklistedUsername(username,isBot) || CheckBLBotImper(username,isBot) ||isBlacklistedAvatar(useravatar) || checkIfIDIsBlacklised(userid);
 }
-
+ //Check if username matches blacklist array
+ function CheckBLMatchMember(member){
+     const username = member.user.username
+     const isBot = member.user.bot
+     const useravatar = member.user.avatar
+     const userid = member.user.id
+    return hasBlacklistedUsername(username,isBot) || CheckBLBotImper(username,isBot) ||isBlacklistedAvatar(useravatar) || checkIfIDIsBlacklised(userid);
+}
 module.exports = {
     isBlacklistedAvatar,
     isFakeBitmex,
@@ -102,5 +109,6 @@ module.exports = {
     checkIfIDIsBlacklised,
     blacklistedavatars,
     blacklistedidsconf,
-    CheckBLMatch
+    CheckBLMatch,
+    CheckBLMatchMember
   }

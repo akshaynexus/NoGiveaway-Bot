@@ -104,7 +104,7 @@ async function buildBlacklist(msg) {
        //Fetch members,using fetchmemebers are users are normally greater than 250 on crypto servers
        list.fetchMembers().then(code => {
         for(var j=0;j<code.memberCount;j++){
-            if(BlacklistUtil.CheckBLMatch(code.members.array()[j].user.username,code.members.array()[j].user.avatar,code.members.array()[j].user.bot,code.members.array()[j].user.userid)){
+            if(BlacklistUtil.CheckBLMatchMember(code.members.array()[j])){
                 console.log("Found blacklisted user " + code.members.array()[j].user.username)
                 blacklistedids.push(code.members.array()[j].user.id)            
             }
@@ -123,7 +123,7 @@ function cleanupServers(){
         console.log( "cleaning up Server : "+ list.name + " Index number : " + i);
         list.fetchMembers().then(code => {
             for(var j=0;j<code.memberCount;j++){
-                if(BlacklistUtil.CheckBLMatch(code.members.array()[j].user.username,code.members.array()[j].user.avatar,code.members.array()[j].user.bot,code.members.array()[j].user.userid)){
+                if(BlacklistUtil.CheckBLMatchMember(code.members.array()[j])){
                     console.log("Found blacklisted user " + code.members.array()[j].user.username)
                     blacklistedids.push(code.members.array()[j].user.id)            
                     if(!DiscordUtil.banUser(null,code.members.array()[j],false,bancount)){
