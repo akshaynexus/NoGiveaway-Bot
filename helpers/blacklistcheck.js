@@ -52,6 +52,7 @@ function CheckBLBotImper(user,isBot = false){
 }
 function isLibraSpamDecode(msg){
     var Returnval = false;
+    try{
     msg = decodeURI(msg)
     if ( msg.toLowerCase().includes("https://imgur.com/lu79bwq") 
      || msg.toLowerCase().includes("getlⅰbra.cc") 
@@ -64,6 +65,10 @@ function isLibraSpamDecode(msg){
      || msg.toLowerCase().includes("imgur.ⅽom/zHnd8eh")
      || msg.toLowerCase().includes("for the ones who are interested in facebooks ⅼⅰbra currency, it just got released, means you can buy some cheap at the moment"))
      Returnval = true;
+    }
+    catch(e){
+        return false;
+    }
     return Returnval;
 }
 function isLibraSpam(msg){

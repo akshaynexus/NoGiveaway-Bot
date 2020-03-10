@@ -28,29 +28,21 @@ client.setMaxListeners(1000);
 //Executes when connected successfully after login with token
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
-    client.user.setActivity(`Protecting ${client.guilds.size} servers from giveaway spam`);
+    client.user.setActivity(`Protecting servers from giveaway spam`);
 });
-
 // This event triggers when the bot joins a guild.
 client.on("guildCreate", guild => {
     // This event triggers when the bot joins a guild.
     console.log(`New guild joined: ${guild.name} (id: ${guild.id}). This guild has ${guild.memberCount} members!`);
-    client.user.setActivity(`Protecting ${client.guilds.size} servers from giveaway spam`);
+    client.user.setActivity(`Protecting servers from giveaway spam`);
 });
 
 // Create an event listener for new guild members
 client.on('guildMemberAdd', member => {
-    // Send the message to a designated channel on a server:
-    // const channel = member.guild.channels.find(ch => ch.name === 'member-log');
     DatabaseUtil.AddJoinToCollection(member);
-    // if (!channel){
-        console.log(`Welcome to the server Name: ${member.guild.name} Server ID: ${member.guild.id},UserID :${member} Username: ${member.user.username}#${member.user.discriminator} Join timestamp ${member.user.createdTimestamp}  `);
-    // }
-    // else{
-    //     channel.send(`Welcome to the server, ${member}`);
-    // }
+    console.log(`Welcome to the server Name: ${member.guild.name} Server ID: ${member.guild.id},UserID :${member} Username: ${member.user.username}#${member.user.discriminator} Join timestamp ${member.user.createdTimestamp}  `);
     if(BlacklistUtil.CheckBLMatch(member.user.username,member.user.avatar,member.user.bot,member.user.id))
-        DiscordUtil.banUser(null,member,false,bancount);
+        DiscordUtil.banUser(null,member,false);
 });
 
 client.on('message', msg => {
@@ -70,7 +62,7 @@ client.on('message', msg => {
         msg.reply(blacklistedids.length);
     }
     else if (BlacklistUtil.isLibraSpam(msg.content)){
-        DiscordUtil.banuser(null,msg.guild.member(msg.author.id),true,bancount);
+        DiscordUtil.banUser(null,msg.guild.member(msg.author.id),true);
     }
     else if (msg.content === 'cleanupServers'){
         cleanupServers();
@@ -84,7 +76,7 @@ client.on('userUpdate', (oldUser,newUser) => {
         const servid = DatabaseUtil.findGuild(newUser.id);
         const memtoban = DiscordUtil.getMember(client,servid,newUser.id);
         if(memtoban != null){
-            DiscordUtil.banUser(null,memtoban,false,bancount);
+            DiscordUtil.banUser(null,memtoban,false);
        }
     }
 });
@@ -101,9 +93,9 @@ async function buildBlacklist(msg) {
        //Fetch members,using fetchmemebers are users are normally greater than 250 on crypto servers
        list.fetchMembers().then(code => {
         for(var j=0;j<code.memberCount;j++){
-            if(BlacklistUtil.CheckBLMatchMember(code.members.array()[j])){
-                console.log("Found blacklisted user " + code.members.array()[j].user.username)
-                blacklistedids.push(code.members.array()[j].user.id)            
+            if(BlacklistUtil.CheckBLMatchMember(code.array()[j])){
+                console.log("Found blacklisted user " + code.array()[j].user.username)
+                blacklistedids.push(code.array()[j].user.id)            
             }
         }
     });
@@ -113,24 +105,30 @@ async function buildBlacklist(msg) {
 }
 
 function cleanupServers(){
-    for(var i=0;i<client.guilds.keyArray().length;i++){
+    for(var i=0;i<client.guilds.cache.keyArray().length;i++){
     //Get guild from msg invoking this command
-    var list = client.guilds.get(client.guilds.keyArray()[i].toString());
+    var list = client.guilds.cache.get(client.guilds.cache.keyArray()[i].toString());
     if (list != undefined){
         console.log( "cleaning up Server : "+ list.name + " Index number : " + i);
-        list.fetchMembers().then(code => {
-            for(var j=0;j<code.memberCount;j++){
-                if(BlacklistUtil.CheckBLMatchMember(code.members.array()[j])){
-                    console.log("Found blacklisted user " + code.members.array()[j].user.username)
-                    blacklistedids.push(code.members.array()[j].user.id)            
-                    if(!DiscordUtil.banUser(null,code.members.array()[j],false,bancount)){
-                        console.log("Cleanupservers failed\n")
-                        return false;
+        list.members.fetch().then(code => {
+            for(var j=0;j<code.size;j++){
+                if(BlacklistUtil.CheckBLMatchMember(code.array()[j])){
+                    console.log("Found blacklisted user " + code.array()[j].user.username)
+                    blacklistedids.push(code.array()[j].user.id)
+                    if(bancount + 1 <= blacklistedids.length &&
+                        !DiscordUtil.banUser(null,code.array()[j],false)){
+                            console.log("Cleanupservers failed\n")
+                            return false;
+                        }
+                    }
+                    else{
+                        ++bancount;
+                        if(bancount == blacklistedids.length)
+                            return true;
+                        console.log("Total Ban count " + bancount + "\n" + "Remaining : " + blacklistedids.length - bancount + "\n" );
                     }
                 }
-
-            }
-        });
+            });
         }
     }
 }

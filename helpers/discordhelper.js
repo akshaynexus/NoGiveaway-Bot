@@ -43,14 +43,13 @@ function sendBanReport(client,msg){
     //TODO add log channel configurtion commnd to code.
 }
 
-function banUser(msg,member,fLibraSpam = false,bancount){
+function banUser(msg,member,fLibraSpam = false){
     if (member) {
         member.ban({
             reason: fLibraSpam ? 'LibraSpam':'SpamBot',days:7
         }).then(() => {
             // We let the message author know we were able to ban the person
-            ++bancount;
-            console.log("Banned sucessfully : " + bancount + " Username " + member.user.username)
+            console.log("Banned sucessfully : Username " + member.user.username)
             return true;
         }).catch(err => {
             // An error happened

@@ -35,7 +35,8 @@ const BotImperArr = [
     "Еnеrgі WаllеtUpdаtеВОT",
     "SmаrtСаsh WalletUpdateBOT",
     "SmаrtСаsh UpdateWallet BOT",
-    "SmаrtСаsh Nеws ВОТ"
+    "SmаrtСаsh Nеws ВОТ",
+    "РОLІS NеwsВОТ"
     ];
 const NotBotArr= [
     "ZCoin Nеws",
@@ -55,7 +56,8 @@ const NotBotArr= [
     "Zabotto",
     "Cryptobot",
     "Bad Robot",
-    "[JuBot] tr91"
+    "[JuBot] tr91",
+    "Polis TipBot"
 ]
 const BLNames = [
     "GiveawayBot",
