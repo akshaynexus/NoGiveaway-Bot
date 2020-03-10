@@ -17,7 +17,7 @@ describe('NoGiveway testing', function () {
 
        it('Bot impersonator check no-falsepositive', function () {
             for(var i=0;i<TestConsts.NotBotArr.length;i++){
-                assert.equal(BLUtil.CheckBLBotImper(TestConsts.NotBotArr[i],true),false);
+                assert.equal(BLUtil.CheckBLBotImper(TestConsts.NotBotArr[i],false),false);
             }
        });
 
