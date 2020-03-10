@@ -50,21 +50,40 @@ function CheckBLBotImper(user,isBot = false){
     }
     return toreturnbool;
 }
-
-function isLibraSpam(msg){
-    if ( 
-        msg.toLowerCase().includes("https://imgur.com/lu79bwq") 
+function isLibraSpamDecode(msg){
+    var Returnval = false;
+    msg = decodeURI(msg)
+    if ( msg.toLowerCase().includes("https://imgur.com/lu79bwq") 
      || msg.toLowerCase().includes("getlⅰbra.cc") 
      || msg.toLowerCase().includes("hey just saw this tweet: https://imgur.com/")
      || msg.toLowerCase().includes("https://imgur.com/H8MZuke")
      || msg.toLowerCase().includes("librasecure.net")
+     || msg.toLowerCase().includes("ⅼⅰbrasecure.net")
      || msg.toLowerCase().includes("for the ones who are interested in facebooks libra coin, it just got released")
      || msg.toLowerCase().includes("and the tweet https://imgur.com")
      || msg.toLowerCase().includes("imgur.ⅽom/zHnd8eh")
      || msg.toLowerCase().includes("for the ones who are interested in facebooks ⅼⅰbra currency, it just got released, means you can buy some cheap at the moment"))
-     return true;
-     else  
-        return false;
+     Returnval = true;
+    return Returnval;
+}
+function isLibraSpam(msg){
+    var Returnval = false;
+    if ( msg.toLowerCase().includes("https://imgur.com/lu79bwq") 
+     || msg.toLowerCase().includes("getlⅰbra.cc") 
+     || msg.toLowerCase().includes("hey just saw this tweet: https://imgur.com/")
+     || msg.toLowerCase().includes("https://imgur.com/H8MZuke")
+     || msg.toLowerCase().includes("librasecure.net")
+     || msg.toLowerCase().includes("ⅼⅰbrasecure.net")
+     || msg.toLowerCase().includes("for the ones who are interested in facebooks libra coin, it just got released")
+     || msg.toLowerCase().includes("and the tweet https://imgur.com")
+     || msg.toLowerCase().includes("imgur.ⅽom/zHnd8eh")
+     || msg.toLowerCase().includes("for the ones who are interested in facebooks ⅼⅰbra currency, it just got released, means you can buy some cheap at the moment"))
+     Returnval = true;
+
+     if(!Returnval){
+        Returnval = isLibraSpamDecode(msg)
+     }
+     return Returnval;
 }
 
 function checkIfIDIsBlacklised(userid){
