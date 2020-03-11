@@ -64,5 +64,6 @@ const BLNames = [
     "Pump and dump",
     "Bitmex Giveaway",
     "pleinbit",
+    "BitMex"
 ]
 module.exports = {BotImperArr,NotBotArr,BLNames}

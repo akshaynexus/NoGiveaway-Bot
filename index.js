@@ -12,12 +12,18 @@ var blacklistedids = [];
 
 //debug.log log code
 var logFile = fs.createWriteStream('debug.log', { flags: 'a' });
+var messagelogFile = fs.createWriteStream('messages.log', { flags: 'a' });
+
   // Or 'w' to truncate the file every time the process starts.
 var logStdout = process.stdout;
 
 console.log = function () {
   logFile.write(util.format.apply(null, arguments) + '\n');
   logStdout.write(util.format.apply(null, arguments) + '\n');
+}
+console.logmessage = function () {
+    messagelogFile.write(util.format.apply(null, arguments) + '\n');
+    // logStdout.write(util.format.apply(null, arguments) + '\n');
 }
 //Database code
 DatabaseUtil.mongoose.connect('mongodb://' + config.db.user + ':' + config.db.pass + '@' +'localhost/nogiveaway', {useNewUrlParser: true,useUnifiedTopology: true}, function (err) {
@@ -48,6 +54,8 @@ client.on('guildMemberAdd', member => {
 client.on('message', msg => {
     //Check if there is a guild in message,dont go further if its a dm.
     if (!msg.guild) return;
+    if(!msg.webhookID)
+        console.logmessage(msg.content)
     if (msg.content === 'buildblacklist') {
         buildBlacklist(msg);
     } else if (msg.content === 'getblacklistcount') {
@@ -125,9 +133,11 @@ function cleanupServers(){
                     else{
                             //Increment bancount and log ban data
                             ++bancount;
-                            if(bancount == blacklistedids.length)
-                                return true;
                             console.log("Total Ban count " + bancount + "\n" + "Remaining : " + blacklistedids.length - bancount + "\n" );
+                            if(BlacklistUtil.isBanQueueFinished(bancount,blacklistedids.length)){
+                                clearVars();
+                                return true;
+                            }
                     }
                 }
             }

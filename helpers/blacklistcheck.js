@@ -105,8 +105,8 @@ function checkIfIDIsBlacklised(userid){
 
 function hasBlacklistedUsername(username,isBot){
     var toReturn = isFakeBitmex(username) && !isBot;
-    
-    for(var i=0;i<config.blacklistednames.length;i++){
+    if(!toReturn)
+        for(var i=0;i<config.blacklistednames.length;i++){
         toReturn = username.toLowerCase().includes(config.blacklistednames[i]) && !isBot;
         if(config.blacklistednames[i] == "magic"){
             toReturn =  username.toLowerCase() == config.blacklistednames[i] && !isBot;
