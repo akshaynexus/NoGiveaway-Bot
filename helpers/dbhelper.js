@@ -4,17 +4,6 @@ const mongoose = require('mongoose');
 const config = require('../config.json')
 const BlacklistIDModel = require('../models/blacklistidmodel');
 
-function connectDB(){
-//Database code
- mongoose.connect('mongodb://' + config.db.user + ':' + config.db.pass + '@' +'localhost/nogiveaway', function (err) {
-         if (err){
-                return false   
-            } 
-    return true;
-
-});
-}
-
 function saveBlacklistedIDS(ids){
     //Save blacklist to db before clearing
     var blacklistobj = new BlacklistIDModel({
@@ -54,7 +43,6 @@ async function findGuild(userid){
 module.exports = {
     AddJoinToCollection,
     findGuild,
-    connectDB,
     saveBlacklistedIDS,
     mongoose
 }
