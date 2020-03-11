@@ -16,6 +16,10 @@ function isFakeBitmex(username){
     return (username.includes("BitMex") || username.includes("Bitmex")) 
 }
 
+function isBanQueueFinished(bancount,blacklistedcount){
+    return bancount == blacklistedcount;
+}
+
 function CheckBLBotImper(user,isBot = false){
     var toreturnbool = false;
 
@@ -134,5 +138,6 @@ module.exports = {
     blacklistedavatars,
     blacklistedidsconf,
     CheckBLMatch,
-    CheckBLMatchMember
+    CheckBLMatchMember,
+    isBanQueueFinished
   }

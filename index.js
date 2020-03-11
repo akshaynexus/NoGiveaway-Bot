@@ -112,25 +112,28 @@ function cleanupServers(){
         console.log( "cleaning up Server : "+ list.name + " Index number : " + i);
         list.members.fetch().then(code => {
             for(var j=0;j<code.size;j++){
+                //Check if member matched blacklist
                 if(BlacklistUtil.CheckBLMatchMember(code.array()[j])){
                     console.log("Found blacklisted user " + code.array()[j].user.username)
+                    //push id to blacklistedids for data retrival
                     blacklistedids.push(code.array()[j].user.id)
-                    if(bancount + 1 <= blacklistedids.length &&
+                    if(!BlacklistUtil.isBanQueueFinished(bancount,blacklistedids.length) && 
                         !DiscordUtil.banUser(null,code.array()[j],false)){
                             console.log("Cleanupservers failed\n")
                             return false;
-                        }
-                        else{
+                    }
+                    else{
+                            //Increment bancount and log ban data
                             ++bancount;
                             if(bancount == blacklistedids.length)
                                 return true;
                             console.log("Total Ban count " + bancount + "\n" + "Remaining : " + blacklistedids.length - bancount + "\n" );
-                        }
                     }
                 }
-            });
-        }
+            }
+        });
     }
+}
 }
 
 //Reset global vars

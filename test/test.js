@@ -1,9 +1,8 @@
 // const chalk = require('chalk');
 const assert = require('assert');
 const BLUtil = require('../helpers/blacklistcheck');
-const DBUtil = require('../helpers/dbhelper');
 const TestConsts = require('./testconstants')
-describe('NoGiveway testing', function () {
+describe('Blacklist Tests:', function () {
         it('Bot impersonator check normal', function () {
             for(var i=0;i<TestConsts.BotImperArr.length;i++){
                 assert.equal(BLUtil.CheckBLBotImper(TestConsts.BotImperArr[i]),true);
@@ -54,10 +53,8 @@ describe('NoGiveway testing', function () {
         it('Blacklisted Name No-Falsepositive bot', function () {
                 assert.equal(BLUtil.CheckBLMatch(TestConsts.BLNames[0],null,true),false);
         });
-//     it('DB User Check', function () {
-// //        assert.equal(await DBUtil.connectDB(),true);
-//         assert.notEqual( DBUtil.findGuild(669666075771797500),null);
-//         // assert.equal( DBUtil.findGuild(234000238262747138),null);
-//         // assert.equal( DBUtil.findGuild(417857235079790592),null);
-//     });
+        it('BanQueue check', function () {
+            assert.equal(BLUtil.isBanQueueFinished(1,1),true);
+            assert.equal(BLUtil.isBanQueueFinished(1,0),false);
+        });
 });
