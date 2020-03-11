@@ -120,12 +120,12 @@ function cleanupServers(){
                             console.log("Cleanupservers failed\n")
                             return false;
                         }
-                    }
-                    else{
-                        ++bancount;
-                        if(bancount == blacklistedids.length)
-                            return true;
-                        console.log("Total Ban count " + bancount + "\n" + "Remaining : " + blacklistedids.length - bancount + "\n" );
+                        else{
+                            ++bancount;
+                            if(bancount == blacklistedids.length)
+                                return true;
+                            console.log("Total Ban count " + bancount + "\n" + "Remaining : " + blacklistedids.length - bancount + "\n" );
+                        }
                     }
                 }
             });
