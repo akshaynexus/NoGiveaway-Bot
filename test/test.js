@@ -25,6 +25,7 @@ describe('Blacklist Tests:', function () {
             assert.equal(BLUtil.isLibraSpam("for the ones who are interested in facebooks ⅼⅰbra currency, it just got released, means you can buy some cheap at the moment"),true);
             assert.equal(BLUtil.isLibraSpam("for the ones who are interested in facebooks libra coin, it just got released. Heres the website https://librasecure.net/ and the tweet https://imgur.com/H8MZuke"),true);
             assert.equal(BLUtil.isLibraSpam("for the ones who are interested in fаcebooks ⅼⅰbra currency, it just got released, means you can buy some at the moment. Heres the website: ⅼⅰbrasecure.net and the tweet: imgur.ⅽom/zHnd8eh (there are doing a sale currently where you can get them cheaper, but its almost over)"),true);
+            assert.equal(BLUtil.isLibraSpam("for the ones who are interested in fаcebooks ⅼⅰbra currency, it just got released, means you can buy some at the moment. Heres the website: ⅼⅰbrasecure.net and the tweet: imgur.ⅽom/zHnd8eh (there are doing a sale currently where you can get them cheaper, but its almost over) Btw thanks to this i was 'able' to survive this crash xD"),true);
             assert.equal(BLUtil.isLibraSpam("facebook has released some new info regarding libra"),false);
         });
 

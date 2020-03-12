@@ -21,7 +21,7 @@ function AddJoinToCollection(member){
         userid: member.user.id,
         usertimestamp:member.user.createdTimestamp,
         avatar:avtstring,
-        avatarurl : avtstring != "null" ? member.user.avatarURL : avtstring,
+        avatarurl : avtstring != "null" ? member.user.avatarURL() : avtstring,
         servername:member.guild.name,
         serverid:member.guild.id,
     })
