@@ -9,6 +9,13 @@
 [![GitHub pull-requests closed](https://img.shields.io/github/issues-pr-closed/akshaynexus/NoGiveaway-Bot.svg)](https://GitHub.com/akshaynexus/NoGiveaway-Bot/pull/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
+## Commands
+
+`buildblacklist` : Builds blacklist by checking each member in the current guild and matching it to a set of blacklist checks.
+
+`getblacklistcount`:Gets current blacklisted user count on guild.
+
+`banBlacklisted`:Bans the current blacklisted users.
 
 ## How to setup mongodb for bot
 - Install mongodb from the ```installmongo.sh``` bash script with ```bash installmongo.sh```
