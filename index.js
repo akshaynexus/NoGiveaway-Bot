@@ -12,7 +12,6 @@ var blacklistedids = [];
 const prefix = '!'
 //debug.log log code
 var logFile = fs.createWriteStream('debug.log', { flags: 'a' });
-var messagelogFile = fs.createWriteStream('messages.log', { flags: 'a' });
 
   // Or 'w' to truncate the file every time the process starts.
 var logStdout = process.stdout;
@@ -21,13 +20,14 @@ console.log = function () {
   logFile.write(util.format.apply(null, arguments) + '\n');
   logStdout.write(util.format.apply(null, arguments) + '\n');
 }
-
 //Database code
+
 DatabaseUtil.mongoose.connect('mongodb://' + config.db.user + ':' + config.db.pass + '@' +'localhost/nogiveaway', {useNewUrlParser: true,useUnifiedTopology: true}, function (err) {
     if (err) throw err;
     client.login(config.token);    
+    client.setMaxListeners(1000);
 });
-client.setMaxListeners(1000);
+
 //Executes when connected successfully after login with token
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
@@ -73,8 +73,9 @@ client.on('message', msg => {
 
 });
 client.on('userUpdate', (oldUser,newUser) => {
-    //Check if there is a guild in message,dont go further if its a dm.
-    console.log("User ID: "  + newUser.id + " changed username from " + oldUser.username + " to " + newUser.username);
+    //Check if there is a guild in message,dont go further if its a dm
+    if(oldUser.username != newUser.username)
+        console.log("User ID: "  + newUser.id + " changed username from " + oldUser.username + " to " + newUser.username);
     if(BlacklistUtil.CheckBLBotImper(newUser.username,newUser.bot)){
         const servid = DatabaseUtil.findGuild(newUser.id);
         const memtoban = DiscordUtil.getMember(client,servid,newUser.id);
@@ -94,11 +95,13 @@ async function buildBlacklist(msg) {
     var list = msg.guild;
     if (list != undefined){
        //Fetch members,using fetchmemebers are users are normally greater than 250 on crypto servers
-       list.fetchMembers().then(code => {
-        for(var j=0;j<code.memberCount;j++){
+       list.members.fetch().then(code => {
+        for(var j=0;j<code.size;j++){
+            //Check if member matched blacklist
             if(BlacklistUtil.CheckBLMatchMember(code.array()[j])){
                 console.log("Found blacklisted user " + code.array()[j].user.username)
-                blacklistedids.push(code.array()[j].user.id)            
+                //push id to blacklistedids for data retrival
+                blacklistedids.push(code.array()[j].user.id)
             }
         }
     });
