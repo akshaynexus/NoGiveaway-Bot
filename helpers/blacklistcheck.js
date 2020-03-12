@@ -107,14 +107,18 @@ function hasBlacklistedUsername(username,isBot){
     var toReturn = isFakeBitmex(username) && !isBot;
     if(!toReturn)
         for(var i=0;i<config.blacklistednames.length;i++){
-        toReturn = username.toLowerCase().includes(config.blacklistednames[i]) && !isBot;
-        if(config.blacklistednames[i] == "magic"){
-            toReturn =  username.toLowerCase() == config.blacklistednames[i] && !isBot;
+            toReturn = username.toLowerCase().includes(config.blacklistednames[i]) && !isBot;
+            if(config.blacklistednames[i] == "magic"){
+                toReturn =  username.toLowerCase() == config.blacklistednames[i] && !isBot;
+            }
+            if(toReturn)
+                return toReturn;
         }
-        if(toReturn)
-            return toReturn;
-    }
     return toReturn;
+}
+function checkIfUserIsNew(timestamp,avatar){
+    //Check if user is less than 4d old
+        return Date.now() - timestamp <= 1.296e+8 && avatar == null;
 }
 
  //Check if username matches blacklist array
@@ -127,7 +131,7 @@ function CheckBLMatch(username,useravatar=null ,isBot=false,userid=0){
      const isBot = member.user.bot
      const useravatar = member.user.avatar
      const userid = member.user.id
-    return hasBlacklistedUsername(username,isBot) || CheckBLBotImper(username,isBot) ||isBlacklistedAvatar(useravatar) || checkIfIDIsBlacklised(userid);
+    return hasBlacklistedUsername(username,isBot) || CheckBLBotImper(username,isBot) ||isBlacklistedAvatar(useravatar) || checkIfIDIsBlacklised(userid) || checkIfUserIsNew(member.user.createdTimestamp,useravatar);
 }
 module.exports = {
     isBlacklistedAvatar,
@@ -139,5 +143,6 @@ module.exports = {
     blacklistedidsconf,
     CheckBLMatch,
     CheckBLMatchMember,
+    checkIfUserIsNew,
     isBanQueueFinished
   }

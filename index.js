@@ -125,19 +125,21 @@ function cleanupServers(){
                     console.log("Found blacklisted user " + code.array()[j].user.username)
                     //push id to blacklistedids for data retrival
                     blacklistedids.push(code.array()[j].user.id)
-                    if(!BlacklistUtil.isBanQueueFinished(bancount,blacklistedids.length) && 
-                        !DiscordUtil.banUser(null,code.array()[j],false)){
-                            console.log("Cleanupservers failed\n")
-                            return false;
+                    //TODO find why this gives a cleanupservers failed even though it bans the detected user sucessfully
+                    if(DiscordUtil.banUser(null,code.array()[j],false)){
+                         //Increment bancount and log ban data
+                        ++bancount;
+                        console.log("Total Ban count " + bancount + "\n" + "Remaining : " + blacklistedids.length - bancount + "\n" );
+                        if(BlacklistUtil.isBanQueueFinished(bancount,blacklistedids.length)){
+                            clearVars();
+                            return true;
+                        }
+                        else{continue;}
+
                     }
                     else{
-                            //Increment bancount and log ban data
-                            ++bancount;
-                            console.log("Total Ban count " + bancount + "\n" + "Remaining : " + blacklistedids.length - bancount + "\n" );
-                            if(BlacklistUtil.isBanQueueFinished(bancount,blacklistedids.length)){
-                                clearVars();
-                                return true;
-                            }
+                        // console.log("Cleanupservers failed\n")
+                        // return false;
                     }
                 }
             }
