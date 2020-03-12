@@ -9,7 +9,7 @@ const DiscordUtil = require('./helpers/discordhelper');
 const BlacklistUtil = require('./helpers/blacklistcheck');
 var bancount = 0;
 var blacklistedids = [];
-
+const prefix = '!'
 //debug.log log code
 var logFile = fs.createWriteStream('debug.log', { flags: 'a' });
 var messagelogFile = fs.createWriteStream('messages.log', { flags: 'a' });
@@ -56,23 +56,23 @@ client.on('message', msg => {
     if (!msg.guild) return;
     if(!msg.webhookID)
         console.logmessage(msg.content)
-    if (msg.content === 'buildblacklist') {
+    if (msg.content === prefix + 'buildblacklist') {
         buildBlacklist(msg);
-    } else if (msg.content === 'getblacklistcount') {
+    } else if (msg.content === prefix + 'getblacklistcount') {
         msg.reply(blacklistedids.length);
     }
-    else if (msg.content === 'banBlacklisted') {
+    else if (msg.content === prefix +'banBlacklisted') {
         if(blacklistedids.length >0)
             DiscordUtil.banBlacklisted(msg,null,bancount,blacklistedids);
     }
-    else if (msg.content === 'clearList') {
+    else if (msg.content === prefix +'clearList') {
         clearVars();
         msg.reply(blacklistedids.length);
     }
     else if (BlacklistUtil.isLibraSpam(msg.content)){
         DiscordUtil.banUser(null,msg.guild.member(msg.author.id),true);
     }
-    else if (msg.content === 'cleanupServers'){
+    else if (msg.content === prefix +'cleanupServers'){
         cleanupServers();
     }
 
