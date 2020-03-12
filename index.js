@@ -21,10 +21,7 @@ console.log = function () {
   logFile.write(util.format.apply(null, arguments) + '\n');
   logStdout.write(util.format.apply(null, arguments) + '\n');
 }
-console.logmessage = function () {
-    messagelogFile.write(util.format.apply(null, arguments) + '\n');
-    // logStdout.write(util.format.apply(null, arguments) + '\n');
-}
+
 //Database code
 DatabaseUtil.mongoose.connect('mongodb://' + config.db.user + ':' + config.db.pass + '@' +'localhost/nogiveaway', {useNewUrlParser: true,useUnifiedTopology: true}, function (err) {
     if (err) throw err;
@@ -54,8 +51,6 @@ client.on('guildMemberAdd', member => {
 client.on('message', msg => {
     //Check if there is a guild in message,dont go further if its a dm.
     if (!msg.guild) return;
-    if(!msg.webhookID)
-        console.logmessage(msg.content)
     if (msg.content === prefix + 'buildblacklist') {
         buildBlacklist(msg);
     } else if (msg.content === prefix + 'getblacklistcount') {
