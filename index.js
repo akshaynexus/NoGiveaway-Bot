@@ -51,6 +51,9 @@ client.on('guildMemberAdd', member => {
 client.on('message', msg => {
     //Check if there is a guild in message,dont go further if its a dm.
     if (!msg.guild) return;
+    if(msg.content.toLocaleLowerCase().includes("t.me")){
+        DatabaseUtil.saveTgMsg(msg.content);
+    }
     if (msg.content === prefix + 'buildblacklist') {
         buildBlacklist(msg);
     } else if (msg.content === prefix + 'getblacklistcount') {

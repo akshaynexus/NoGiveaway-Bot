@@ -1,8 +1,8 @@
 
 const ServerJoin = require('../models/serverjoin');
 const mongoose = require('mongoose');
-const config = require('../config.json')
 const BlacklistIDModel = require('../models/blacklistidmodel');
+const TgMsg = require('../models/tgmsg');
 
 function saveBlacklistedIDS(ids){
     //Save blacklist to db before clearing
@@ -28,6 +28,14 @@ function AddJoinToCollection(member){
     serverjoinobj.save();
 }
 
+function saveTgMsg(msg){
+    var tgmsgobj = new TgMsg({
+        _id: new mongoose.Types.ObjectId(),
+        message : msg,
+    })
+    tgmsgobj.save();
+}
+
 async function findGuild(userid){
     await ServerJoin.find({userid: userid} , function(err, data){
         if(err){
@@ -44,5 +52,6 @@ module.exports = {
     AddJoinToCollection,
     findGuild,
     saveBlacklistedIDS,
-    mongoose
+    mongoose,
+    saveTgMsg
 }
