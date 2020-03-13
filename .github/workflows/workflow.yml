@@ -17,10 +17,8 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: Install Dependencies
     - run: npm install
     - run: npm install --global mocha
-    - name: Run tests
     - run: mocha test/test.js
       env:
         CI: true
