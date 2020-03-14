@@ -59,9 +59,9 @@ describe('Blacklist Tests:', function () {
             assert.equal(BLUtil.isBanQueueFinished(1,0),false);
         });
         it('Brand New Acc detection', function () {
-            assert.equal(BLUtil.checkIfUserIsNew(Date.now() - 1.296e+8,null),true);
-            assert.equal(BLUtil.checkIfUserIsNew(Date.now() - 8.64e+7,null),true);
-            assert.equal(BLUtil.checkIfUserIsNew(Date.now() - 2.592e+7,null),true);
+            assert.equal(BLUtil.checkIfUserIsNew(Date.now() - 1.44e+7,null),true);
+            assert.equal(BLUtil.checkIfUserIsNew(Date.now() - 1.08e+7,null),true);
+            assert.equal(BLUtil.checkIfUserIsNew(Date.now() - 2.592e+7,null),false);
             assert.equal(BLUtil.checkIfUserIsNew(Date.now() - 3.456e+8,null),false);
         });
 });

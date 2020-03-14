@@ -12,6 +12,7 @@ function saveBlacklistedIDS(ids){
     });
     blacklistobj.save();
 }
+// mongoose.set('debug', true);
 
 function AddJoinToCollection(member){
     var avtstring = member.user.avatar != null ? member.user.avatar : "null";
@@ -37,14 +38,15 @@ function saveTgMsg(msg){
 }
 
 async function findGuild(userid){
-    await ServerJoin.find({userid: userid} , function(err, data){
+    await ServerJoin.findOne({userid: userid} , function(err, data){
         if(err){
           console.log(err);
+          return;
         };
         if(data.length == 0) {
             return null;
         }
-        return data[0].serverid;
+        return data;
       });
 }
 

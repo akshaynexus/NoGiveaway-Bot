@@ -118,7 +118,7 @@ function hasBlacklistedUsername(username,isBot){
 }
 function checkIfUserIsNew(timestamp,avatar){
     //Check if user is less than 4d old
-        return Date.now() - timestamp <= 1.296e+8 && avatar == null;
+        return Date.now() - timestamp <= 2.16e+7;
 }
 
  //Check if username matches blacklist array

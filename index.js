@@ -7,6 +7,7 @@ const fs = require('fs');
 const DatabaseUtil = require('./helpers/dbhelper');
 const DiscordUtil = require('./helpers/discordhelper');
 const BlacklistUtil = require('./helpers/blacklistcheck');
+const ApiHelper = require('./helpers/apihelper')
 var bancount = 0;
 var blacklistedids = [];
 const prefix = '!'
@@ -31,6 +32,7 @@ DatabaseUtil.mongoose.connect('mongodb://' + config.db.user + ':' + config.db.pa
 //Executes when connected successfully after login with token
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
+    ApiHelper.startServer();
     client.user.setActivity(`Protecting servers from giveaway spam`);
 });
 // This event triggers when the bot joins a guild.
@@ -148,7 +150,6 @@ function cleanupServers(){
     }
 }
 }
-
 //Reset global vars
 function clearVars(){
     DatabaseUtil.saveBlacklistedIDS(blacklistedids);
