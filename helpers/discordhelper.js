@@ -1,7 +1,7 @@
 function getMember(client,serverid,userid){
-    var listx = client.guilds.get(serverid);
+    var listx = client.guilds.cache.get(serverid);
     if (listx != undefined){
-        return client.fetchUser(userid);
+        return listx.members.fetch(userid);
     }
     return null;
 }

@@ -4,41 +4,47 @@ const BLUtil = require('../helpers/blacklistcheck');
 const TestConsts = require('./testconstants')
 describe('Blacklist Tests:', function () {
         it('Bot impersonator check normal', function () {
-            for(var i=0;i<TestConsts.BotImperArr.length;i++){
-                assert.equal(BLUtil.CheckBLBotImper(TestConsts.BotImperArr[i]),true);
-            }
+            TestConsts.BotImperArr.forEach(ImperBot => {
+                assert.equal(BLUtil.CheckBLBotImper(ImperBot),true);
+            })
         });
        it('Bot impersonator check encoded', function () {
-            for(var i=0;i<TestConsts.BotImperArr.length;i++){
-                assert.equal(BLUtil.CheckBLBotImper(encodeURI(TestConsts.BotImperArr[i])),true);
-            }
+           TestConsts.BotImperArr.forEach(ImperBot => {
+            assert.equal(BLUtil.CheckBLBotImper(encodeURI(ImperBot)),true);
+           })
        });
 
        it('Bot impersonator check no-falsepositive', function () {
-            for(var i=0;i<TestConsts.NotBotArr.length;i++){
-                assert.equal(BLUtil.CheckBLBotImper(TestConsts.NotBotArr[i],false),false);
-            }
+            TestConsts.NotBotArr.forEach(normUser => {
+                assert.equal(BLUtil.CheckBLBotImper(normUser,false),false);
+            })
        });
 
         it('Libra Spam check', function () {
-            assert.equal(BLUtil.isLibraSpam("for the ones who are interested in facebooks libra coin, it just got released. Heres the website https://librasecure.net/ and the tweet https://imgur.com/H8MZuk"),true);
-            assert.equal(BLUtil.isLibraSpam("for the ones who are interested in facebooks ⅼⅰbra currency, it just got released, means you can buy some cheap at the moment"),true);
-            assert.equal(BLUtil.isLibraSpam("for the ones who are interested in facebooks libra coin, it just got released. Heres the website https://librasecure.net/ and the tweet https://imgur.com/H8MZuke"),true);
-            assert.equal(BLUtil.isLibraSpam("for the ones who are interested in fаcebooks ⅼⅰbra currency, it just got released, means you can buy some at the moment. Heres the website: ⅼⅰbrasecure.net and the tweet: imgur.ⅽom/zHnd8eh (there are doing a sale currently where you can get them cheaper, but its almost over)"),true);
-            assert.equal(BLUtil.isLibraSpam("for the ones who are interested in fаcebooks ⅼⅰbra currency, it just got released, means you can buy some at the moment. Heres the website: ⅼⅰbrasecure.net and the tweet: imgur.ⅽom/zHnd8eh (there are doing a sale currently where you can get them cheaper, but its almost over) Btw thanks to this i was 'able' to survive this crash xD"),true);
-            assert.equal(BLUtil.isLibraSpam("facebook has released some new info regarding libra"),false);
+            TestConsts.LibraFakeSpam.forEach(spamMsg => {
+                assert.equal(BLUtil.isLibraSpam(spamMsg),true);
+            })
+            TestConsts.NotLibraSpam.forEach(normMsg => {
+                assert.equal(BLUtil.isLibraSpam(normMsg),false);
+            })
         });
 
         it('Fake BitMex check', function () {
-            assert.equal(BLUtil.isFakeBitmex("Bitmex Giveaway"),true);
-            assert.equal(BLUtil.isFakeBitmex("Bitmex [News]"),true);
-            assert.equal(BLUtil.isFakeBitmex("e"),false);
+            TestConsts.FakeBitmex.forEach(fakeBitmex => {
+                assert.equal(BLUtil.isFakeBitmex(fakeBitmex),true);
+            })
+            TestConsts.NotFakeBitmex.forEach(normUser => {
+                assert.equal(BLUtil.isFakeBitmex(normUser),false);
+            })
         });
 
         it('Blacklisted ID check', function () {
-            assert.equal(BLUtil.checkIfIDIsBlacklised(665326064406626300),true);
-            assert.equal(BLUtil.checkIfIDIsBlacklised(670673938648662100),true);
-            assert.equal(BLUtil.checkIfIDIsBlacklised(12312312313),false);
+            TestConsts.BlacklistedID.forEach(id => {
+                assert.equal(BLUtil.checkIfIDIsBlacklised(id),true);
+            })
+            TestConsts.normalID.forEach(normid => {
+                assert.equal(BLUtil.checkIfIDIsBlacklised(normid),false);
+            })
         });
 
         it('Blacklisted Avatar check', function () {
@@ -47,12 +53,11 @@ describe('Blacklist Tests:', function () {
             assert.equal(BLUtil.isBlacklistedAvatar("ec8768f48105c1219db7f05cfd7d6b84"),false);
         });
         it('Blacklisted Name check', function () {
-            for(var i=0;i<TestConsts.BLNames.length;i++){
-                assert.equal(BLUtil.CheckBLMatch(TestConsts.BLNames[i],null,false),true);
-            }
-        });
-        it('Blacklisted Name No-Falsepositive bot', function () {
-                assert.equal(BLUtil.CheckBLMatch(TestConsts.BLNames[0],null,true),false);
+            TestConsts.BLNames.forEach(BLName => {
+                assert.equal(BLUtil.CheckBLMatch(BLName),true);
+            })
+            //Check that the blacklisted name isnt blacklisted if it is a bot
+            assert.equal(BLUtil.CheckBLMatch(TestConsts.BLNames[0],null,true),false);
         });
         it('BanQueue check', function () {
             assert.equal(BLUtil.isBanQueueFinished(1,1),true);

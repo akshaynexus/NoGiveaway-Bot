@@ -43,7 +43,7 @@ async function findGuild(userid){
           console.log(err);
           return;
         };
-        if(data.length == 0) {
+        if(!data || data.length == 0 || data == undefined) {
             return null;
         }
         return data;

@@ -36,8 +36,18 @@ const BotImperArr = [
     "SmаrtСаsh WalletUpdateBOT",
     "SmаrtСаsh UpdateWallet BOT",
     "SmаrtСаsh Nеws ВОТ",
-    "РОLІS NеwsВОТ"
-    ];
+    "РОLІS NеwsВОТ",
+    "Іmpоrtаnt Hоtfіхеs Nоtifісаtion"
+];
+
+const BlacklistedID = [
+    665326064406626300,
+    670673938648662100
+]
+const normalID = [
+    12312312313
+]
+
 const NotBotArr= [
     "ZCoin Nеws",
     "CoinWallet",
@@ -56,9 +66,9 @@ const NotBotArr= [
     "Zabotto",
     "Cryptobot",
     "Bad Robot",
-    "[JuBot] tr91",
-    "Polis TipBot"
-]
+    "[JuBot] tr91"
+];
+
 const BLNames = [
     "GiveawayBot",
     "Pump and dump",
@@ -66,4 +76,27 @@ const BLNames = [
     "pleinbit",
     "BitMex"
 ]
-module.exports = {BotImperArr,NotBotArr,BLNames}
+
+const LibraFakeSpam = [
+    "for the ones who are interested in facebooks libra coin, it just got released. Heres the website https://librasecure.net/ and the tweet https://imgur.com/H8MZuk",
+    "for the ones who are interested in facebooks ⅼⅰbra currency, it just got released, means you can buy some cheap at the moment",
+    "for the ones who are interested in facebooks libra coin, it just got released. Heres the website https://librasecure.net/ and the tweet https://imgur.com/H8MZuke",
+    "for the ones who are interested in fаcebooks ⅼⅰbra currency, it just got released, means you can buy some at the moment. Heres the website: ⅼⅰbrasecure.net and the tweet: imgur.ⅽom/zHnd8eh (there are doing a sale currently where you can get them cheaper, but its almost over)",
+    "for the ones who are interested in fаcebooks ⅼⅰbra currency, it just got released, means you can buy some at the moment. Heres the website: ⅼⅰbrasecure.net and the tweet: imgur.ⅽom/zHnd8eh (there are doing a sale currently where you can get them cheaper, but its almost over) Btw thanks to this i was 'able' to survive this crash xD",
+    "Finally Faⅽebooks official Lⅰbra Coin is avaible to buy now, you should get some because its almost sold out and the sale just started some hours ago. (You can buy them for 0.50$ right now, but because its a stablecoin you can sell it later for 1$ per coin), heres lⅰnk: getlⅰbra.tech (heres the tweet: https://imgur.com/ZbL8OVV) Good luck!"
+]
+
+const NotLibraSpam = [
+    "facebook has released some new info regarding libra"
+]
+
+const FakeBitmex = [
+    "Bitmex Giveaway",
+    "Bitmex [News]"
+]
+const NotFakeBitmex = [
+    "robin123",
+    "BitMEX Arthur"
+]
+
+module.exports = {BotImperArr,NotBotArr,BLNames,LibraFakeSpam,NotLibraSpam,FakeBitmex,NotFakeBitmex,BlacklistedID,normalID}

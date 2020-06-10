@@ -46,7 +46,7 @@ client.on("guildCreate", guild => {
 client.on('guildMemberAdd', member => {
     DatabaseUtil.AddJoinToCollection(member);
     console.log(`Welcome to the server Name: ${member.guild.name} Server ID: ${member.guild.id},UserID :${member} Username: ${member.user.username}#${member.user.discriminator} Join timestamp ${member.user.createdTimestamp}  `);
-    if(BlacklistUtil.CheckBLMatch(member.user.username,member.user.avatar,member.user.bot,member.user.id))
+    if(BlacklistUtil.CheckBLMatchMember(member))
         DiscordUtil.banUser(null,member,false);
 });
 
@@ -71,6 +71,9 @@ client.on('message', msg => {
     }
     else if (BlacklistUtil.isLibraSpam(msg.content)){
         DiscordUtil.banUser(null,msg.guild.member(msg.author.id),true);
+    }
+    else if(BlacklistUtil.isNewCoinspam(msg.content)){
+        DiscordUtil.banUser(null,msg.guild.member(msg.author.id),false);
     }
     else if (msg.content === prefix +'cleanupServers'){
         cleanupServers();
@@ -124,6 +127,10 @@ function cleanupServers(){
         list.members.fetch().then(code => {
             for(var j=0;j<code.size;j++){
                 //Check if member matched blacklist
+                // if(code.array()[j].user.id == 683803084157222920){
+                //     console.log(code.array()[j].user.avatar)
+                //     return true;
+                // 
                 if(BlacklistUtil.CheckBLMatchMember(code.array()[j])){
                     console.log("Found blacklisted user " + code.array()[j].user.username)
                     //push id to blacklistedids for data retrival
