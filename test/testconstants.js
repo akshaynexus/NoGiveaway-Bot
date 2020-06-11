@@ -38,6 +38,8 @@ const BotImperArr = [
   "SmаrtСаsh Nеws ВОТ",
   "РОLІS NеwsВОТ",
   "Іmpоrtаnt Hоtfіхеs Nоtifісаtion",
+  "Security Hotfixes",
+  "SecurityHotfixes",
 ];
 
 const BlacklistedID = [665326064406626300, 670673938648662100];

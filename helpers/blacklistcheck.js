@@ -31,9 +31,10 @@ function CheckBLBotImper(user, isBot = false, fCheck = true) {
 
   if (!toreturnbool && fCheck) {
     try {
-      user = decodeURI(user).toString();
+      user = decodeURIComponent(user);
       toreturnbool = CheckBLBotImper(user, isBot, false);
     } catch (e) {
+      console.error(e);
       return false;
     }
   }
@@ -71,19 +72,13 @@ function checkIfIDIsBlacklised(userid) {
 }
 
 function hasBlacklistedUsername(username, isBot) {
-  var toReturn = isFakeBitmex(username) && !isBot;
-  if (!toReturn)
-    for (var i = 0; i < config.blacklistednames.length; i++) {
-      toReturn =
-        username.toLowerCase().includes(config.blacklistednames[i]) && !isBot;
-      if (config.blacklistednames[i] == "magic") {
-        toReturn =
-          username.toLowerCase() == config.blacklistednames[i] && !isBot;
-      }
-      if (toReturn) return toReturn;
-    }
-  return toReturn;
+  return (
+    (isFakeBitmex(username) ||
+      containsStringInarray(config.blacklistednames, username.toLowerCase())) &&
+    !isBot
+  );
 }
+
 function checkIfUserIsNew(timestamp, avatar) {
   //Check if user is less than 4d old
   return Date.now() - timestamp <= 2.16e7;

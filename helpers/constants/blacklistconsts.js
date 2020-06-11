@@ -6,6 +6,10 @@ const BotImper = [
   "воt",
   "іmpоrtаnt hоtfіхеs nоtifісаtion",
   "updаtеwаllеtвоt",
+  "security hotfixes",
+  "securityhotfixes",
+  "importantupdate",
+  "importantnotification",
 ];
 
 const NotBotImper = ["updates"];
