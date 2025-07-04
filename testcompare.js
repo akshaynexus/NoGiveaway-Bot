@@ -1,5 +1,12 @@
 const Discord = require('discord.js');
-const client = new Discord.Client();
+const client = new Discord.Client({
+  intents: [
+    Discord.GatewayIntentBits.Guilds,
+    Discord.GatewayIntentBits.GuildMembers,
+    Discord.GatewayIntentBits.GuildMessages,
+    Discord.GatewayIntentBits.MessageContent
+  ]
+});
 const config = require('./config.json')
 
 var list;
@@ -13,8 +20,8 @@ const modlogChannelID = config.modchanelid;
 var whitelistedids = config.whitelistedids;
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
-    client.user.setActivity(`Protecting ${client.guilds.size} servers from giveaway spam`);
-    list = client.guilds.get("455359252010237971");
+    client.user.setActivity(`Protecting ${client.guilds.cache.size} servers from giveaway spam`);
+    list = client.guilds.cache.get("455359252010237971");
     buildBlacklist();
     // console.log(client.guilds.keyArray().toString());
     // cleanupServers();
@@ -23,8 +30,8 @@ client.login(config.token);
 
 
 function checkForBlacklistAvatar() {
-    client.fetchUser("680884223699320851").then(myUser => {
-        console.log(myUser.avatarURL)
+    client.users.fetch("680884223699320851").then(myUser => {
+        console.log(myUser.displayAvatarURL())
         console.log(myUser.avatar)
         blacklistedavatars.forEach(function (item,index) {
         if(myUser.avatar != null && myUser.avatar.includes(item.toString())){
@@ -35,14 +42,14 @@ function checkForBlacklistAvatar() {
 });
 }
 async function cleanupServers(){
-    client.guilds.keyArray().forEach(function (item,index) {
+    Array.from(client.guilds.cache.keys()).forEach(function (item,index) {
             //Get guild from msg invoking this command
-    list = client.guilds.get(item.toString());
+    list = client.guilds.cache.get(item.toString());
     console.log(list.name + "indexno " + index)
 
     if(index == 12){
-        const role = list.roles.find("name", "NoGiveaway");
-        console.log(list.roles[1])
+        const role = list.roles.cache.find(role => role.name === "NoGiveaway");
+        console.log(Array.from(list.roles.cache.values())[1])
         console.log(list.channels.forEach(function (item,index) {
             // if(item.type == "text" && item.permissionsFor(role).has("SEND_MESSAGES"))
             // console.log(item.name)
@@ -56,8 +63,8 @@ async function cleanupServers(){
 }
 async function buildBlacklist() {
     if (list != undefined)
-        list.fetchMembers().then(code => {
-            code.members.forEach(member=>{
+        list.members.fetch().then(code => {
+            code.forEach(member=>{
             //     blacklistedavatars.forEach(function (item,index) {
                 if (member.user.username != null ) {
                     // console.log("Detected blacklisted at index " +  index)

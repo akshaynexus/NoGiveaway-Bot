@@ -3,7 +3,7 @@ const express = require("express");
 
 const fs = require("fs");
 const port = 3000;
-let rawdata = fs.readFileSync("/root/NoGiveaway-Bot/outputx.json");
+let rawdata = fs.readFileSync(__dirname + "/../outputx.json");
 var BLIDs = JSON.parse(rawdata);
 var app = express();
 

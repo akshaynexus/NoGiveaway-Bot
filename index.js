@@ -1,6 +1,14 @@
 //Import needed libraries and files
 const Discord = require("discord.js");
-const client = new Discord.Client();
+const client = new Discord.Client({
+  intents: [
+    Discord.GatewayIntentBits.Guilds,
+    Discord.GatewayIntentBits.GuildMembers,
+    Discord.GatewayIntentBits.GuildMessages,
+    Discord.GatewayIntentBits.MessageContent,
+    Discord.GatewayIntentBits.GuildPresences
+  ]
+});
 const config = require("./config.json");
 var util = require("util");
 const fs = require("fs");
@@ -24,26 +32,78 @@ console.log = function () {
 //Database code
 
 DatabaseUtil.mongoose.connect(
-  "mongodb://" +
+  "mongodb+srv://" +
     config.db.user +
     ":" +
     config.db.pass +
     "@" +
-    "localhost/nogiveaway",
-  { useNewUrlParser: true, useUnifiedTopology: true },
-  function (err) {
-    if (err) throw err;
+    config.db.host +
+    // ":" +
+    // config.db.port +
+    "/" +
+    config.db.name
+).then(() => {
     client.login(config.token);
     client.setMaxListeners(1000);
-  }
-);
+}).catch((err) => {
+    throw err;
+});
 
 //Executes when connected successfully after login with token
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
+  console.log(`🏠 Bot is in ${client.guilds.cache.size} servers:`);
+  client.guilds.cache.forEach(guild => {
+    console.log(`  - ${guild.name} (${guild.id}) - ${guild.memberCount} members`);
+  });
+  console.log(`🔧 Intents configured:`, client.options.intents);
+  console.log(`⚡ Waiting for messages...`);
+  
+  // Check permissions in all servers
+  console.log(`🔍 Checking permissions across all servers:`);
+  let serversWithIssues = [];
+  
+  client.guilds.cache.forEach(guild => {
+    const botMember = guild.members.cache.get(client.user.id);
+    if (botMember) {
+      const hasViewChannel = botMember.permissions.has('ViewChannel');
+      const hasReadHistory = botMember.permissions.has('ReadMessageHistory');
+      const hasSendMessages = botMember.permissions.has('SendMessages');
+      
+      if (!hasViewChannel || !hasReadHistory || !hasSendMessages) {
+        serversWithIssues.push({
+          name: guild.name,
+          id: guild.id,
+          viewChannel: hasViewChannel,
+          readHistory: hasReadHistory,
+          sendMessages: hasSendMessages
+        });
+      }
+    } else {
+      serversWithIssues.push({
+        name: guild.name,
+        id: guild.id,
+        issue: 'Bot member not found in cache'
+      });
+    }
+  });
+  
+  if (serversWithIssues.length > 0) {
+    console.log(`❌ Found ${serversWithIssues.length} servers with permission issues:`);
+    serversWithIssues.forEach(server => {
+      if (server.issue) {
+        console.log(`  - ${server.name}: ${server.issue}`);
+      } else {
+        console.log(`  - ${server.name}: View(${server.viewChannel}) Read(${server.readHistory}) Send(${server.sendMessages})`);
+      }
+    });
+  } else {
+    console.log(`✅ All servers have proper permissions!`);
+  }
   ApiHelper.startServer();
   client.user.setActivity(`Protecting servers from giveaway spam`);
 });
+
 // This event triggers when the bot joins a guild.
 client.on("guildCreate", (guild) => {
   // This event triggers when the bot joins a guild.
@@ -63,9 +123,15 @@ client.on("guildMemberAdd", (member) => {
     DiscordUtil.banUser(null, member, false);
 });
 
-client.on("message", (msg) => {
+client.on("messageCreate", (msg) => {
   //Check if there is a guild in message,dont go further if its a dm.
   if (!msg.guild) return;
+  
+  // Skip bot messages
+  if (msg.author.bot) return;
+  
+  // Nice console log for message flow
+  console.log(`📨 [${msg.guild.name}] ${msg.author.username}: ${msg.content.substring(0, 100)}${msg.content.length > 100 ? '...' : ''}`);
   if (msg.content.toLocaleLowerCase().includes("t.me")) {
     DatabaseUtil.saveTgMsg(msg.content);
   }
@@ -80,9 +146,9 @@ client.on("message", (msg) => {
     clearVars();
     msg.reply(blacklistedids.length);
   } else if (BlacklistUtil.isLibraSpam(msg.content)) {
-    DiscordUtil.banUser(null, msg.guild.member(msg.author.id), true);
+    DiscordUtil.banUser(null, msg.guild.members.cache.get(msg.author.id), true);
   } else if (BlacklistUtil.isNewCoinspam(msg.content)) {
-    DiscordUtil.banUser(null, msg.guild.member(msg.author.id), false);
+    DiscordUtil.banUser(null, msg.guild.members.cache.get(msg.author.id), false);
   } else if (msg.content === prefix + "cleanupServers") {
     cleanupServers();
   }
@@ -120,12 +186,12 @@ async function buildBlacklist(msg) {
     list.members.fetch().then((code) => {
       for (var j = 0; j < code.size; j++) {
         //Check if member matched blacklist
-        if (BlacklistUtil.CheckBLMatchMember(code.array()[j])) {
+        if (BlacklistUtil.CheckBLMatchMember(Array.from(code.values())[j])) {
           console.log(
-            "Found blacklisted user " + code.array()[j].user.username
+            "Found blacklisted user " + Array.from(code.values())[j].user.username
           );
           //push id to blacklistedids for data retrival
-          blacklistedids.push(code.array()[j].user.id);
+          blacklistedids.push(Array.from(code.values())[j].user.id);
         }
       }
     });
@@ -134,32 +200,32 @@ async function buildBlacklist(msg) {
 }
 
 function cleanupServers() {
-  for (var i = 0; i < client.guilds.cache.keyArray().length; i++) {
+  for (var i = 0; i < Array.from(client.guilds.cache.keys()).length; i++) {
     //Get guild from msg invoking this command
     var list = client.guilds.cache.get(
-      client.guilds.cache.keyArray()[i].toString()
+      Array.from(client.guilds.cache.keys())[i].toString()
     );
     if (
       list != undefined &&
-      client.guilds.cache.keyArray()[i].toString() != "264445053596991498" &&
-      client.guilds.cache.keyArray()[i].toString() != "689639729981030446"
+      Array.from(client.guilds.cache.keys())[i].toString() != "264445053596991498" &&
+      Array.from(client.guilds.cache.keys())[i].toString() != "689639729981030446"
     ) {
       console.log("cleaning up Server : " + list.name + " Index number : " + i);
       list.members.fetch().then((code) => {
         for (var j = 0; j < code.size; j++) {
           //Check if member matched blacklist
-          // if(code.array()[j].user.id == 683803084157222920){
-          //     console.log(code.array()[j].user.avatar)
+          // if(Array.from(code.values())[j].user.id == 683803084157222920){
+          //     console.log(Array.from(code.values())[j].user.avatar)
           //     return true;
           //
-          if (BlacklistUtil.CheckBLMatchMember(code.array()[j])) {
+          if (BlacklistUtil.CheckBLMatchMember(Array.from(code.values())[j])) {
             console.log(
-              "Found blacklisted user " + code.array()[j].user.username
+              "Found blacklisted user " + Array.from(code.values())[j].user.username
             );
             //push id to blacklistedids for data retrival
-            blacklistedids.push(code.array()[j].user.id);
+            blacklistedids.push(Array.from(code.values())[j].user.id);
             //TODO find why this gives a cleanupservers failed even though it bans the detected user sucessfully
-            if (DiscordUtil.banUser(null, code.array()[j], false)) {
+            if (DiscordUtil.banUser(null, Array.from(code.values())[j], false)) {
               //Increment bancount and log ban data
               ++bancount;
               console.log(

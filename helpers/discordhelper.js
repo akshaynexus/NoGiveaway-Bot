@@ -1,3 +1,5 @@
+const { EmbedBuilder } = require("discord.js");
+
 function getMember(client, serverid, userid) {
   var listx = client.guilds.cache.get(serverid);
   if (listx != undefined) {
@@ -10,7 +12,7 @@ function banBlacklisted(msg, memberx, bancount, blacklistedids) {
   var i = 0;
   if (msg != null) {
     while (!(bancount == blacklistedids.length) && blacklistedids.length != 0) {
-      if (banUser(msg, msg.guild.member(blacklistedids[i]), false, bancount))
+      if (banUser(msg, msg.guild.members.cache.get(blacklistedids[i]), false, bancount))
         i++;
       else return false;
     }
@@ -22,18 +24,18 @@ function banBlacklisted(msg, memberx, bancount, blacklistedids) {
 
 function sendBanReport(client, msg) {
   if (msg != null) {
-    const banConfirmationEmbedModlog = new Discord.MessageEmbed()
-      .setAuthor(
-        `Banned Spammers by **${msg.author.username}#${msg.author.discriminator}**`,
-        msg.author.displayAvatarURL
-      )
+    const banConfirmationEmbedModlog = new EmbedBuilder()
+      .setAuthor({
+        name: `Banned Spammers by **${msg.author.username}#${msg.author.discriminator}**`,
+        iconURL: msg.author.displayAvatarURL()
+      })
       .setColor("RED")
       .setTimestamp().setDescription(`
         **Action**: Ban
         **Bancount**: ${bancount}
         **Reason**: SpamBot`);
-    client.channels.get(msg.channel.id).send({
-      embed: banConfirmationEmbedModlog,
+    client.channels.cache.get(msg.channel.id).send({
+      embeds: [banConfirmationEmbedModlog],
     });
   } else {
     console.log("Ban task finished with total count: " + bancount);
@@ -46,7 +48,7 @@ function banUser(msg, member, fLibraSpam = false) {
     member
       .ban({
         reason: fLibraSpam ? "LibraSpam" : "SpamBot",
-        days: 7,
+        deleteMessageDays: 7,
       })
       .then(() => {
         // We let the message author know we were able to ban the person
