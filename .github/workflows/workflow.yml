@@ -1,4 +1,4 @@
-name: Node.js CI
+name: Bun CI
 
 on: [push]
 
@@ -7,18 +7,15 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [ 12.x]
-
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
+    - uses: actions/checkout@v4
+    - name: Setup Bun
+      uses: oven-sh/setup-bun@v1
       with:
-        node-version: ${{ matrix.node-version }}
-    - run: npm install
-    - run: npm install --global mocha
-    - run: mocha test/test.js
+        bun-version: latest
+    - name: Install dependencies
+      run: bun install
+    - name: Run tests
+      run: bun test
       env:
         CI: true
