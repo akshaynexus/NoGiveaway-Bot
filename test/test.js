@@ -40,10 +40,10 @@ describe("Blacklist Tests:", function () {
 
   it("Blacklisted ID check", function () {
     TestConsts.BlacklistedID.forEach((id) => {
-      assert.equal(BLUtil.checkIfIDIsBlacklised(id), true);
+      assert.equal(BLUtil.checkIfIDIsBlacklisted(id), true);
     });
     TestConsts.normalID.forEach((normid) => {
-      assert.equal(BLUtil.checkIfIDIsBlacklised(normid), false);
+      assert.equal(BLUtil.checkIfIDIsBlacklisted(normid), false);
     });
   });
 
