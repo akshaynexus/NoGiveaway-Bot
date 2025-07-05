@@ -74,7 +74,7 @@ function CheckBLBotImper(username, isBot = false, shouldDecode = true) {
     }
   }
   
-  if (isImpersonating) {
+  if (isImpersonating && process.env.NODE_ENV !== 'test') {
     console.log(`🚫 Bot impersonation detected: ${username}`);
   }
   
@@ -110,7 +110,7 @@ function isLibraSpam(message, shouldDecode = true) {
     isSpam = isLibraSpamDecoded(message);
   }
   
-  if (isSpam) {
+  if (isSpam && process.env.NODE_ENV !== 'test') {
     console.log(`🚫 Libra spam detected in message: ${message.substring(0, 50)}...`);
   }
   
@@ -178,10 +178,12 @@ function CheckBLMatchMember(member) {
       .filter(([, value]) => value)
       .map(([key]) => key);
     
-    console.log(
-      `🚫 Blacklisted user detected: ${username} (${userId}) in ${member.guild.name} - ` +
-      `Triggered checks: ${triggeredChecks.join(', ')}`
-    );
+    if (process.env.NODE_ENV !== 'test') {
+      console.log(
+        `🚫 Blacklisted user detected: ${username} (${userId}) in ${member.guild.name} - ` +
+        `Triggered checks: ${triggeredChecks.join(', ')}`
+      );
+    }
   }
   
   return isBlacklisted;

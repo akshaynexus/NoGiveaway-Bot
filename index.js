@@ -43,6 +43,10 @@ class Logger {
   }
 
   setupConsoleOverride() {
+    if (process.env.NODE_ENV === 'test') {
+      return;
+    }
+    
     const originalLog = console.log;
     console.log = (...args) => {
       const timestamp = new Date().toISOString();

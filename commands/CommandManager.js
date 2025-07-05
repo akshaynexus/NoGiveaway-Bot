@@ -14,7 +14,9 @@ class CommandManager {
    * Load all commands from the commands directory
    */
   loadCommands() {
-    console.log('📁 Loading commands...');
+    if (process.env.NODE_ENV !== 'test') {
+      console.log('📁 Loading commands...');
+    }
     const commandsPath = path.join(__dirname);
     const commandFiles = fs.readdirSync(commandsPath).filter(file => 
       file.endsWith('.js') && 
@@ -28,13 +30,17 @@ class CommandManager {
         const command = new CommandClass();
         
         this.commands.set(command.name, command);
-        console.log(`  ✅ Loaded command: ${command.name}`);
+        if (process.env.NODE_ENV !== 'test') {
+          console.log(`  ✅ Loaded command: ${command.name}`);
+        }
       } catch (error) {
         console.error(`  ❌ Failed to load command ${file}:`, error.message);
       }
     }
 
-    console.log(`📁 Loaded ${this.commands.size} commands`);
+    if (process.env.NODE_ENV !== 'test') {
+      console.log(`📁 Loaded ${this.commands.size} commands`);
+    }
   }
 
   /**

@@ -38,7 +38,9 @@ try {
   if (fs.existsSync(dataPath)) {
     const rawData = fs.readFileSync(dataPath, 'utf-8');
     BLIDs = JSON.parse(rawData);
+    if (process.env.NODE_ENV !== 'test') {
     console.log(`📊 Loaded ${BLIDs.length} blacklisted IDs from file`);
+  }
   } else {
     console.log('⚠️ No outputx.json file found, starting with empty blacklist');
   }

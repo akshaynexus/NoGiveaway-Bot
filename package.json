@@ -4,7 +4,13 @@
   "description": "NoGiveaway-Bot",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test/test",
+    "test": "mocha test/*.js --timeout 10000",
+    "test:blacklist": "mocha test/test.js",
+    "test:commands": "mocha test/command-tests.js --timeout 10000",
+    "test:modern": "mocha test/modern-command-tests.js --timeout 10000",
+    "test:helpers": "mocha test/helper-tests.js --timeout 10000",
+    "test:manager": "mocha test/command-manager-tests.js --timeout 10000",
+    "test:integration": "mocha test/integration-tests.js --timeout 10000",
     "start": "node index.js"
   },
   "repository": {
@@ -24,6 +30,9 @@
     "mongoose": "^8.16.1"
   },
   "devDependencies": {
-    "mocha": "^11.7.1"
+    "@shoginn/discordjs-mock": "^1.0.11",
+    "discord.js-mock-interactions": "^0.1.9",
+    "mocha": "^11.7.1",
+    "sinon": "^21.0.0"
   }
 }

@@ -5,7 +5,9 @@ async function getMember(client, serverId, userId) {
   try {
     const guild = client.guilds.cache.get(serverId);
     if (!guild) {
-      console.error(`Guild not found: ${serverId}`);
+      if (process.env.NODE_ENV !== 'test') {
+        console.error(`Guild not found: ${serverId}`);
+      }
       return null;
     }
     
@@ -95,7 +97,9 @@ async function sendBanReport(msg, successCount = 0, failCount = 0) {
 // Enhanced ban function with proper async/await and better error handling
 async function banUser(msg, member, isLibraSpam = false) {
   if (!member) {
-    console.log('⚠️ Cannot ban: Member not found in guild');
+    if (process.env.NODE_ENV !== 'test') {
+      console.log('⚠️ Cannot ban: Member not found in guild');
+    }
     return false;
   }
   
@@ -103,7 +107,9 @@ async function banUser(msg, member, isLibraSpam = false) {
     // Check if we can ban this user (role hierarchy)
     const botMember = member.guild.members.cache.get(member.client.user.id);
     if (botMember && member.roles.highest.position >= botMember.roles.highest.position) {
-      console.log(`⚠️ Cannot ban ${member.user.username}: Role hierarchy prevents ban`);
+      if (process.env.NODE_ENV !== 'test') {
+        console.log(`⚠️ Cannot ban ${member.user.username}: Role hierarchy prevents ban`);
+      }
       if (msg) {
         await msg.reply(`❌ Cannot ban ${member.user.username}: Their role is higher than or equal to mine.`);
       }
@@ -122,7 +128,9 @@ async function banUser(msg, member, isLibraSpam = false) {
     
   } catch (error) {
     const errorMsg = `Failed to ban ${member.user.username}: ${error.message}`;
-    console.error('❌', errorMsg);
+    if (process.env.NODE_ENV !== 'test') {
+      console.error('❌', errorMsg);
+    }
     
     if (msg) {
       if (error.code === 50013) {
