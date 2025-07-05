@@ -27,6 +27,13 @@ let isCacheUpdating = false;
 // Initialize command manager
 const commandManager = new CommandManager();
 
+// Clear state variables function
+function clearVars() {
+  banCount = 0;
+  blacklistedIds = [];
+  console.log('🗑️ State variables cleared: banCount and blacklistedIds reset');
+}
+
 // Enhanced logging setup
 class Logger {
   constructor() {
@@ -683,32 +690,6 @@ async function handleCommand(msg) {
       PREFIX,
       CACHE_DURATION
     };
-    
-    // Handle legacy commands that aren't moved yet
-    if (command === 'getblacklistcount') {
-      await msg.reply(`📊 Current blacklist count: ${blacklistedIds.length}`);
-      return;
-    }
-    
-    if (command === 'banblacklisted') {
-      if (blacklistedIds.length > 0) {
-        await DiscordUtil.banBlacklisted(msg, null, banCount, blacklistedIds);
-      } else {
-        await msg.reply('📋 No blacklisted users found. Use `!buildblacklist` first.');
-      }
-      return;
-    }
-    
-    if (command === 'clearlist') {
-      const isAdmin = msg.member?.permissions.has('Administrator');
-      if (!isAdmin) {
-        await msg.reply('❌ You need administrator permissions to use this command.');
-        return;
-      }
-      clearVars();
-      await msg.reply(`🗑️ Blacklist cleared. Count: ${blacklistedIds.length}`);
-      return;
-    }
     
     // Try to execute command using the command manager
     const commandExecuted = await commandManager.executeCommand(command, msg, args, client, utils);
